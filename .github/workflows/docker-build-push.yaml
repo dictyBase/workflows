@@ -39,7 +39,7 @@ jobs:
         uses: docker/metadata-action@v4
         with: 
           context: git
-          images: dictybase/modware-auth
+          images: ${{ inputs.repository }}
           tags: |
             type=ref,event=branch
             type=sha,format=short,prefix={{branch}}-
