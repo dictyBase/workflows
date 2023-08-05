@@ -38,12 +38,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with: 
-          context: git
           images: |
             name=dictybase/modware-auth
           tags: |
             type=ref,event=branch
             type=sha,format=short,prefix={{branch}}-
+          context: git
       - name: docker build and push
         uses: docker/build-push-action@v4
         with:
