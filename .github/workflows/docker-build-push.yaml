@@ -40,7 +40,7 @@ jobs:
         with: 
           context: git
           images: |
-            ${{ inputs.repository }}
+            name="${{ inputs.repository }}"
           tags: |
             type=ref,event=branch
             type=sha,format=short,prefix={{branch}}-
