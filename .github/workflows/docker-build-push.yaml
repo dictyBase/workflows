@@ -41,7 +41,7 @@ jobs:
         uses: docker/metadata-action@v4
         with: 
           images: |
-            '${{ inputs.repository }}'
+            ${{ inputs.repository }}
           tags: |
             type=ref,event=branch
             type=sha,format=short,prefix={{branch}}-
