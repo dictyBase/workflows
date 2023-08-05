@@ -39,7 +39,7 @@ jobs:
         uses: docker/metadata-action@v4
         with: 
           images: |
-            name=dictybase/modware-auth
+            name=${{ inputs.repository }}
           tags: |
             type=ref,event=branch
             type=sha,format=short,prefix={{branch}}-
