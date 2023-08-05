@@ -34,11 +34,14 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
+      - name: output repo name
+        run: echo ${{ inputs.repository }}
       - name: setup docker metadata
         id: meta
         uses: docker/metadata-action@v4
         with: 
-          images: ${{ inputs.repository }}
+          images: |
+            '${{ inputs.repository }}'
           tags: |
             type=ref,event=branch
             type=sha,format=short,prefix={{branch}}-
