@@ -1,0 +1,28 @@
+name: lint-golang
+on: 
+  workflow_dispatch:
+    inputs:
+      repository-name:
+        description: "The name of the repository from which the slash command was dispatched"
+        required: true
+      ref:
+        required: true
+        type: string
+        description: "The branch,tag or SHA to checkout"
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out code
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '~1.20.6'
+          cache: false
+      - name: run linter
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.52.2
