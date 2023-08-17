@@ -1,0 +1,30 @@
+name: test-coverage
+on: 
+  workflow_dispatch:
+    inputs:
+      repository-name:
+        description: "The name of the repository from which the slash command was dispatched"
+        required: true
+      ref:
+        required: true
+        type: string
+        description: "The branch,tag or SHA to checkout"
+jobs:
+  testcov:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out code
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+      - name: set up golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: '~1.20.6'
+      - name: unit test
+        run: go test -covermode=atomic -coverprofile=profile.cov -v ./...
+      - name: upload coverage to codecov
+        uses: codecov/codecov-action@v3
+        with:
+            file: ./profile.cov
