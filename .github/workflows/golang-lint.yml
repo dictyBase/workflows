@@ -2,7 +2,7 @@ name: lint-golang
 on: 
   workflow_call:
     inputs:
-      repository-name:
+      repository:
         description: "The name of the repository from which the slash command was dispatched"
         required: true
         type: string
