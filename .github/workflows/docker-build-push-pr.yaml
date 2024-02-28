@@ -20,7 +20,7 @@ jobs:
         with:
           repository: ${{ inputs.repository }}
           ref: ${{ inputs.ref }}
-          fetch_depth: 0
+          fetch-depth: 0
       - name: set up docker buildx
         uses: docker/setup-buildx-action@v2
       - name: log into dockerhub
