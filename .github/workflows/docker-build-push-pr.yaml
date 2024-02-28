@@ -44,7 +44,7 @@ jobs:
             ${{ inputs.repository }}
           tags: |
             type=ref,event=pr
-            type=sha,format=short,suffix=-{{sha}}
+            type=sha,format=short
           context: git
       - name: docker build and push
         uses: docker/build-push-action@v4
