@@ -1,0 +1,69 @@
+name: Reusable docker build push workflow with mode selection
+on:
+  workflow_call:
+    inputs:
+      build_state:
+        type: string
+        default: development
+        description: "Build mode of docker such as staging,development and production"
+      repository:
+        required: true
+        type: string
+        description: "Repository name with owner"
+      ref:
+        required: true
+        type: string
+        description: "The branch,tag or SHA to checkout"
+      dockerfile:
+        required: true
+        type: string
+        description: "location of the docker file"
+      dockerrepo:
+        required: true
+        type: string
+        description: "name of the docker repository"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out code
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+      - name: set up docker buildx
+        uses: docker/setup-buildx-action@v2
+      - name: log into dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: cache docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: setup docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ inputs.dockerrepo }}
+          tags: |
+            type=ref,event=branch
+            type=sha,format=short,prefix={{branch}}-
+          context: git
+      - name: docker build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          file: ${{ inputs.dockerfile }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          build-args: |
+            BUILD_STATE=${{ inputs.build_state }}
