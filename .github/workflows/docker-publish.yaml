@@ -18,6 +18,11 @@ on:
         required: true
         type: string
         description: "location of the docker file"
+      namespace:
+        required: false
+        type: string
+        default: "dictybase"
+        description: "namespace to use for docker image"
 
 jobs:
   docker:
@@ -29,6 +34,6 @@ jobs:
           version: "latest"
           verb: call
           module: github.com/dictybase-docker/dagger-of-dcr/container-image@main
-          args: with-image --image=${{ inputs.image }} with-ref --ref=${{ inputs.ref }} with-dockerfile --docker-file=${{ inputs.dockerfile }} with-namespace --namespace=dictybase with-repository --repository=${{ format('https://github.com/{0}',inputs.repository) }} publish-from-repo --user=${{ secrets.DOCKERHUB_USER }} --password=${{ secrets.DOCKER_PASS }}
+          args: with-image --image=${{ inputs.image }} with-ref --ref=${{ inputs.ref }} with-dockerfile --docker-file=${{ inputs.dockerfile }} with-namespace --namespace=${{ inputs.namespace }} with-repository --repository=${{ format('https://github.com/{0}',inputs.repository) }} publish-from-repo --user=${{ secrets.DOCKERHUB_USER }} --password=${{ secrets.DOCKER_PASS }}
   
 
