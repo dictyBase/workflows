@@ -1,0 +1,34 @@
+name: docker publish workflow with dagger
+on:
+  workflow_call:
+    inputs:
+      repository:
+        required: true
+        type: string
+        description: "Repository name with owner"
+      image:
+        required: true
+        type: string 
+        description: "Name of docker image"
+      ref:
+        required: true
+        type: string
+        description: "The branch,tag or SHA to checkout"
+      dockerfile:
+        required: true
+        type: string
+        description: "location of the docker file"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: run dagger function
+        uses: dagger/dagger-for-github@v5
+        with:
+          version: "latest"
+          verb: call
+          module: github.com/dictybase-docker/dagger-of-dcr/container-image@main
+          args: with-image --image=${{ inputs.image }} with-ref --ref=${{ inputs.ref }} with-dockerfile --docker-file=${{ inputs.dockerfile }} with-repository --repository=${{ format('https://github.com/{0}',inputs.repository) }} publish-repo --user=${{ secrets.DOCKERHUB_USER }} --password=${{ secrets.DOCKER_PASS }}
+  
+
