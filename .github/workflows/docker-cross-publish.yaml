@@ -1,0 +1,44 @@
+name: docker publish workflow with dagger across other organizations
+on:
+  workflow_call:
+    secrets:
+      dockeruser:
+        required: true
+        description: "dockerhub user name"
+      dockerpass:
+        required: true
+        description: "dockerhub password, recommended to use api key"
+    inputs:
+      repository:
+        required: true
+        type: string
+        description: "Repository name with owner"
+      image:
+        required: true
+        type: string 
+        description: "Name of docker image"
+      ref:
+        required: true
+        type: string
+        description: "The branch,tag or SHA to checkout"
+      dockerfile:
+        required: true
+        type: string
+        description: "location of the docker file"
+      namespace:
+        required: false
+        type: string
+        default: "dictybase"
+        description: "namespace to use for docker image"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: run dagger function
+        uses: dagger/dagger-for-github@v5
+        with:
+          version: "latest"
+          verb: call
+          module: github.com/dictybase-docker/dagger-of-dcr/container-image@main
+          args: with-image --image=${{ inputs.image }} with-ref --ref=${{ inputs.ref }} with-dockerfile --docker-file=${{ inputs.dockerfile }} with-namespace --namespace=${{ inputs.namespace }} with-repository --repository=${{ format('https://github.com/{0}',inputs.repository) }} publish-from-repo --user=${{ secrets.dockeruser }} --password=${{ secrets.dockerpass }}
