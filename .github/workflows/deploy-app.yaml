@@ -86,7 +86,7 @@ jobs:
       - name: buid and push container image
         id: app_container
         run: |
-          dagger call -m github.com/dictybase-docker/dagger-of-dcr/container-image@main \
+          output=$(dagger call -m github.com/dictybase-docker/dagger-of-dcr/container-image@main \
             with-image \ 
               --image=${{ inputs.image }} \
             with-ref \ 
@@ -99,6 +99,7 @@ jobs:
               --repository=${{ format('https://github.com/{0}',inputs.repository) }} \ 
             publish-from-repo \ 
               --user=${{ secrets.DOCKERHUB_USER }} \ 
-              --password=${{ secrets.DOCKER_PASS }} 
+              --password=${{ secrets.DOCKER_PASS }})
+          echo "image=${output}" >> "$GITHUB_OUTPUT"
   
 
