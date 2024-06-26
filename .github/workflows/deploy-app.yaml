@@ -101,5 +101,12 @@ jobs:
               --user=${{ secrets.DOCKERHUB_USER }} \ 
               --password=${{ secrets.DOCKER_PASS }})
           echo "image=${output}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+
   
 
