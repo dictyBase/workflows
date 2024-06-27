@@ -33,10 +33,10 @@ on:
         description: "location of cluster state"
 
 env:
-  ACTION_BIN_PATH: ${GITHUB_WORKSPACE}/github_actions/bin
-  DAGGER_BIN_PATH: ${GITHUB_WORKSPACE}/dag/bin
-  DAGGER_CHECKSUM_PATH: ${GITHUB_WORKSPACE}/dag/checksum
-  KUBECTL_CONFIG: ${GITHUB_WORKSPACE}/config/dictycr.yaml
+  ACTION_BIN_PATH: /tmp/github_actions/bin
+  DAGGER_BIN_PATH: /tmp/dag/bin
+  DAGGER_CHECKSUM_PATH: /tmp/dag/checksum
+  KUBECTL_CONFIG: /tmp/config/dictycr.yaml
   IMAGE_MODULE: github.com/dictybase-docker/dagger-of-dcr/container-image@main
   KOPS_MODULE: github.com/dictybase-docker/dagger-of-dcr/kops@main
 
