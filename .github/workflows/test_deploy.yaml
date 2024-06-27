@@ -10,7 +10,7 @@ jobs:
     with:
       cluster: secrets.DEV_STAGING_CLUSTER 
       cluster_state_storage: secrets.DEV_STAGING_KOPS_STATE_STORAGE 
-      repository: "https://github.com/dictyBase/static-server.git"
+      repository: dictyBase/static-server.git
       image: goran
       ref: 5041b41
       dockerfile: Dockerfile
