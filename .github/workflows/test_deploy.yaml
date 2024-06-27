@@ -1,0 +1,20 @@
+# Defining the workflow to run on push to the `develop` branch
+
+name: Test Deploy
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy-app.yaml
+    with:
+      repository: ${{ github.repository }}
+      image: my-docker-image
+      ref: ${{ github.ref }}
+      dockerfile: Dockerfile
+      namespace: my-namespace
+      cluster: my-cluster
+      cluster_state_storage: my-cluster-state-storage
