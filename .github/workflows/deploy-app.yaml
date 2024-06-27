@@ -112,7 +112,7 @@ jobs:
 
       - name: export kubectl
         run: |
-          dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECTL_CONFIG
+          $DAGGER_BIN_PATH/dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECTL_CONFIG
 
   
 
