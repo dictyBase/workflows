@@ -103,12 +103,6 @@ jobs:
             output=$(dagger call -m $IMAGE_MODULE with-image --image=${{ inputs.image }} with-ref --ref=${{ inputs.ref }} with-dockerfile --docker-file=${{ inputs.dockerfile }} with-namespace --namespace=${{ inputs.namespace }} with-repository --repository=${{ format('https://github.com/{0}',inputs.repository) }} publish-from-repo  --user=${{ secrets.DOCKERHUB_USER }} --password=${{ secrets.DOCKER_PASS }})
             echo "image=${output}" >> $GITHUB_OUTPUT
 
-      - name: check for stuffs v1
-        run: |
-          ls -l $DAGGER_BIN_PATH/
-          ls -l $ACTION_BIN_PATH/
-          echo $GITHUB_PATH
-
       - uses: actions/checkout@v4
       - uses: google-github-actions/auth@v2
         id: gcp_authentication
@@ -116,14 +110,6 @@ jobs:
           project_id: ${{ secrets.PROJECT_ID }}
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
 
-      # - name: export kubectl
-      #   run: |
-      #     $DAGGER_BIN_PATH/dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECTL_CONFIG
-
-      - name: check for stuffs v2
+      - name: export kubectl
         run: |
-          ls -l $DAGGER_BIN_PATH/
-          ls -l $ACTION_BIN_PATH/
-          echo $GITHUB_PATH
-  
-
+          dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECTL_CONFIG
