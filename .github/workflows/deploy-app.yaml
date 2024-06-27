@@ -23,6 +23,10 @@ on:
         type: string
         default: "dictybase"
         description: "namespace to use for docker image"
+      cluster:
+        required: true
+        type: string
+        description: "name of kubernetes cluster"
 
 env:
   ACTION_BIN_PATH: ${GITHUB_WORKSPACE}/github_actions/bin
