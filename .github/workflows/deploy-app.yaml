@@ -37,6 +37,8 @@ env:
   DAGGER_BIN_PATH: ${GITHUB_WORKSPACE}/dag/bin
   DAGGER_CHECKSUM_PATH: ${GITHUB_WORKSPACE}/dag/checksum
   KUBECTL_CONFIG: ${GITHUB_WORKSPACE}/config/dictycr.yaml
+  IMAGE_MODULE: github.com/dictybase-docker/dagger-of-dcr/container-image@main
+  KOPS_MODULE: github.com/dictybase-docker/dagger-of-dcr/kops@main
 
 jobs:
   deploy:
@@ -94,22 +96,9 @@ jobs:
           key: ${{ runner.os }}-${{ steps.dag_check.outputs.dagger_version}}-${{ steps.dag_check.outputs.dagger_bin_checksum }}
       - name: buid and push container image
         id: app_container
-        run: >
-            dagger call -m github.com/dictybase-docker/dagger-of-dcr/container-image@main 
-            with-image  
-              --image=${{ inputs.image }} 
-            with-ref  
-              --ref=${{ inputs.ref }} 
-            with-dockerfile  
-              --docker-file=${{ inputs.dockerfile }}  
-            with-namespace  
-              --namespace=${{ inputs.namespace }}  
-            with-repository 
-              --repository=${{ format('https://github.com/{0}',inputs.repository) }}  
-            publish-from-repo  
-              --user=${{ secrets.DOCKERHUB_USER }}  
-              --password=${{ secrets.DOCKER_PASS }} > /tmp/image.txt
-            && echo "image=$(cat /tmp/image.txt)" >> $GITHUB_OUTPUT
+        run: |
+            output=$(dagger call -m $IMAGE_MODULE with-image --image=${{ inputs.image }} with-ref--ref=${{ inputs.ref }} with-dockerfile --docker-file=${{ inputs.dockerfile }} with-namespace --namespace=${{ inputs.namespace }} with-repository --repository=${{ format('https://github.com/{0}',inputs.repository) }} publish-from-repo  --user=${{ secrets.DOCKERHUB_USER }} --password=${{ secrets.DOCKER_PASS }})
+            echo "image=${output}" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v4
       - uses: google-github-actions/auth@v2
@@ -119,16 +108,7 @@ jobs:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: export kubectl
-        run: >
-          dagger -m github.com/dictybase-docker/dagger-of-dcr/kops@main  
-            call with-kops  
-                 with-kubectl  
-                 with-cluster  
-                  --name=${{ inputs.cluster }}  
-                  --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} 
-                  --storage=${{ inputs.cluster_state_storage }} 
-                 export-kubectl 
-                  --output=$KUBECTL_CONFIG
+        run: dagger -m $KOPS_MODULE call with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECTL_CONFIG
 
   
 
