@@ -111,7 +111,8 @@ jobs:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: export kubectl
-        run: dagger -m $KOPS_MODULE call with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECTL_CONFIG
+        run: |
+          dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECTL_CONFIG
 
   
 
