@@ -1,7 +1,4 @@
-# Defining the workflow to run on push to the `develop` branch
-
 name: Test Deploy
-
 on:
   push:
     branches:
@@ -10,11 +7,12 @@ on:
 jobs:
   deploy:
     uses: ./.github/workflows/deploy-app.yaml
+    secrets: inherit
     with:
-      repository: ${{ github.repository }}
-      image: my-docker-image
-      ref: ${{ github.ref }}
+      repository: https://github.com/dictyBase/static-server.git
+      image: goran
+      ref: 5041b41
       dockerfile: Dockerfile
-      namespace: my-namespace
-      cluster: my-cluster
-      cluster_state_storage: my-cluster-state-storage
+      namespace: cybersiddhu
+      cluster: ${{ secrets.DEV_STAGING_CLUSTER }}
+      cluster_state_storage: ${{ secrets.DEV_STAGING_KOPS_STATE_STORAGE }}
