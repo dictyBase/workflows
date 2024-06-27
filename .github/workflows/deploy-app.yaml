@@ -97,7 +97,7 @@ jobs:
       - name: buid and push container image
         id: app_container
         run: |
-            output=$(dagger call -m $IMAGE_MODULE with-image --image=${{ inputs.image }} with-ref--ref=${{ inputs.ref }} with-dockerfile --docker-file=${{ inputs.dockerfile }} with-namespace --namespace=${{ inputs.namespace }} with-repository --repository=${{ format('https://github.com/{0}',inputs.repository) }} publish-from-repo  --user=${{ secrets.DOCKERHUB_USER }} --password=${{ secrets.DOCKER_PASS }})
+            output=$(dagger call -m $IMAGE_MODULE with-image --image=${{ inputs.image }} with-ref --ref=${{ inputs.ref }} with-dockerfile --docker-file=${{ inputs.dockerfile }} with-namespace --namespace=${{ inputs.namespace }} with-repository --repository=${{ format('https://github.com/{0}',inputs.repository) }} publish-from-repo  --user=${{ secrets.DOCKERHUB_USER }} --password=${{ secrets.DOCKER_PASS }})
             echo "image=${output}" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v4
