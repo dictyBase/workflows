@@ -9,8 +9,8 @@ jobs:
     uses: ./.github/workflows/deploy-app.yaml
     secrets: inherit
     with:
-      cluster: secrets.DEV_STAGING_CLUSTER 
-      cluster_state_storage: secrets.DEV_STAGING_KOPS_STATE_STORAGE 
+      cluster: ${{ vars.DEV_STAGING_CLUSTER }}
+      cluster_state_storage: ${{ vars.DEV_STAGING_KOPS_STATE_STORAGE }}
       repository: dictyBase/static-server.git
       image: goran
       ref: 5041b41
