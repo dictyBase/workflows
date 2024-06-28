@@ -49,7 +49,7 @@ jobs:
     steps:
       - name: manage paths
         run: |
-          mkdir -p $ACTION_BIN_PATH $DAGGER_BIN_PATH $DAGGER_CHECKSUM_PATH $KUBECTL_CONFIG
+          mkdir -p $ACTION_BIN_PATH $DAGGER_BIN_PATH $DAGGER_CHECKSUM_PATH $(dirname $KUBECTL_CONFIG)
           echo $ACTION_BIN_PATH >> $GITHUB_PATH
           echo $DAGGER_BIN_PATH >> $GITHUB_PATH
 
