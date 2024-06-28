@@ -107,8 +107,7 @@ jobs:
       - uses: google-github-actions/auth@v2
         id: gcp_authentication
         with:
-          project_id: ${{ secrets.PROJECT_ID }}
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
 
       - name: export kubectl
         run: |
