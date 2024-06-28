@@ -13,6 +13,6 @@ jobs:
       cluster_state_storage: ${{ vars.DEV_STAGING_KOPS_STATE_STORAGE }}
       repository: dictyBase/static-server.git
       image: goran
-      ref: refs/heads/develop
+      ref: develop
       dockerfile: Dockerfile
       namespace: cybersiddhu
