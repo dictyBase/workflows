@@ -31,6 +31,10 @@ on:
         required: true
         type: string
         description: "location of cluster state"
+      pulumi_state_storage:
+        type: string
+        description: "location of pulumi state"
+        default: "gs://dictycr-pulumi-state"
 
 env:
   ACTION_BIN_PATH: /tmp/github_actions/bin
@@ -39,6 +43,7 @@ env:
   KUBECTL_CONFIG: /tmp/config/dictycr.yaml
   IMAGE_MODULE: github.com/dictybase-docker/dagger-of-dcr/container-image@main
   KOPS_MODULE: github.com/dictybase-docker/dagger-of-dcr/kops@main
+  PULUMI_MODULE: github.com/dictybase-docker/dagger-of-dcr/pulumi-ops@main
 
 jobs:
   deploy:
@@ -114,3 +119,5 @@ jobs:
           dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-state-storage --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECTL_CONFIG
       - name: test kubectl
         run: kubectl --kubeconfig $KUBECTL_CONFIG get nodes
+      - name: test pulumi login
+        run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-pulumi login
