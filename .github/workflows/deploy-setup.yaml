@@ -1,4 +1,4 @@
-name: deploy dcr application to kubernetes cluster with pulumi
+name: Setup Deployment Environment for DCR Application
 on:
   workflow_call:
     inputs:
@@ -14,7 +14,6 @@ on:
 env:
   ACTION_BIN_PATH: /tmp/github_actions/bin
   DAGGER_BIN_PATH: /tmp/dag/bin
-  DAGGER_CHECKSUM_PATH: /tmp/dag/checksum
   KUBECTL_CONFIG: /tmp/config/dictycr.yaml
   KOPS_MODULE: github.com/dictybase-docker/dagger-of-dcr/kops@main
 
@@ -27,7 +26,7 @@ jobs:
     steps:
       - name: manage paths
         run: |
-          mkdir -p $ACTION_BIN_PATH $DAGGER_BIN_PATH $DAGGER_CHECKSUM_PATH $(dirname $KUBECTL_CONFIG)
+          mkdir -p $ACTION_BIN_PATH $DAGGER_BIN_PATH $(dirname $KUBECTL_CONFIG)
           echo $ACTION_BIN_PATH >> $GITHUB_PATH
           echo $DAGGER_BIN_PATH >> $GITHUB_PATH
 
@@ -74,4 +73,6 @@ jobs:
           if-no-files-found: error
           retention-days: 0
           overwrite: true
+
+
 
