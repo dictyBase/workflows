@@ -1,0 +1,77 @@
+name: deploy dcr application to kubernetes cluster with pulumi
+on:
+  workflow_call:
+    inputs:
+      cluster:
+        required: true
+        type: string
+        description: "name of kubernetes cluster"
+      cluster_state_storage:
+        required: true
+        type: string
+        description: "location of cluster state"
+
+env:
+  ACTION_BIN_PATH: /tmp/github_actions/bin
+  DAGGER_BIN_PATH: /tmp/dag/bin
+  DAGGER_CHECKSUM_PATH: /tmp/dag/checksum
+  KUBECTL_CONFIG: /tmp/config/dictycr.yaml
+  KOPS_MODULE: github.com/dictybase-docker/dagger-of-dcr/kops@main
+
+jobs:
+  deploy:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    runs-on: ubuntu-latest
+    steps:
+      - name: manage paths
+        run: |
+          mkdir -p $ACTION_BIN_PATH $DAGGER_BIN_PATH $DAGGER_CHECKSUM_PATH $(dirname $KUBECTL_CONFIG)
+          echo $ACTION_BIN_PATH >> $GITHUB_PATH
+          echo $DAGGER_BIN_PATH >> $GITHUB_PATH
+
+      - name: download and setup path for github actions binary
+        run: |
+          curl -L -o ${ACTION_BIN_PATH}/actions \
+            https://github.com/dictybase-docker/github-actions/releases/download/v2.8.0/action_2.8.0_linux_amd64
+          chmod +x ${ACTION_BIN_PATH}/actions
+
+      - name: setup dagger version and checksum
+        id: dag_check
+        run: actions sc
+
+      - name: try to restore dagger binary cache with dagger version and checksum
+        id: restore_dagger_bin_cache
+        uses: actions/cache@v4
+        with: 
+          path: ${{ env.DAGGER_BIN_PATH }}
+          key: ${{ runner.os }}-${{ steps.dag_check.outputs.dagger_version}}-${{ steps.dag_check.outputs.dagger_bin_checksum }}
+
+      - if: steps.restore_dag_bin_cache.outputs.cache-hit != 'true'
+        name: install dagger if the bin cache not restored
+        id: dag_install
+        run: actions sd --dagger-version ${{ steps.dag_check.outputs.dagger_version }} --dagger-bin-dir $DAGGER_BIN_PATH
+
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        id: gcp_authentication
+        with:
+          credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
+
+      - name: export kubectl
+        run: |
+          dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-state-storage --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECTL_CONFIG
+
+      - name: verify kubectl
+        run: kubectl --kubeconfig $KUBECTL_CONFIG get nodes
+
+      - name: share kubectl
+        uses: actions/upload-artifact@v4
+        with: 
+          name: kubectl-config
+          path: $KUBECTL_CONFIG
+          if-no-files-found: error
+          retention-days: 0
+          overwrite: true
+
