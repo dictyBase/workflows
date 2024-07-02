@@ -1,0 +1,78 @@
+name: deploy backend dcr application
+on:
+  workflow_call:
+    # inputs:
+    #   repository:
+    #     required: true
+    #     type: string
+    #     description: "Repository name with owner"
+    #   image:
+    #     required: true
+    #     type: string 
+    #     description: "Name of docker image"
+    #   ref:
+    #     required: true
+    #     type: string
+    #     description: "The branch,tag or SHA to checkout"
+    #   dockerfile:
+    #     required: true
+    #     type: string
+    #     description: "location of the docker file"
+    #   namespace:
+    #     required: false
+    #     type: string
+    #     default: "dictybase"
+    #     description: "namespace to use for docker image"
+    #   cluster:
+    #     required: true
+    #     type: string
+    #     description: "name of kubernetes cluster"
+    #   cluster_state_storage:
+    #     required: true
+    #     type: string
+    #     description: "location of cluster state"
+    #   pulumi_state_storage:
+    #     type: string
+    #     description: "location of pulumi state"
+    #     default: "gs://dictycr-pulumi-state"
+      deploy_group:
+        type: string
+        description: deploy group either of backend or frontend
+        default: backend
+
+env:
+  DAGGER_BIN_PATH: /tmp/dag/bin
+  KUBECONFIG: /tmp/config/dictycr.yaml
+  PULUMI_MODULE: github.com/dictybase-docker/dagger-of-dcr/pulumi-ops@main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: manage paths
+        run: |
+          mkdir -p $DAGGER_BIN_PATH 
+          echo $DAGGER_BIN_PATH >> $GITHUB_PATH
+
+      # - name: setup dagger version and checksum
+      #   id: dag_check
+      #   run: actions sc
+      #
+      # - name: try to restore dagger binary cache with dagger version and checksum
+      #   id: restore_dagger_bin_cache
+      #   uses: actions/cache@v4
+      #   with: 
+      #     path: ${{ env.DAGGER_BIN_PATH }}
+      #     key: ${{ runner.os }}-${{ steps.dag_check.outputs.dagger_version}}-${{ steps.dag_check.outputs.dagger_bin_checksum }}
+
+      - name: download kubectl
+        uses: actions/download-artifact@v4
+        with: 
+          name: kubectl-config
+          path: ${{ env.KUBECONFIG }}
+
+      - name: verify kubectl
+        run: kubectl get nodes
+
+      # - name: verify pulumi
+      #   run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-pulumi login
