@@ -1,4 +1,4 @@
-name: Test Deploy
+name: Test Deploy setup
 on:
   push:
     branches:
@@ -6,13 +6,8 @@ on:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy-app.yaml
+    uses: ./.github/workflows/deploy-setup.yaml
     secrets: inherit
     with:
       cluster: ${{ vars.DEV_STAGING_CLUSTER }}
       cluster_state_storage: ${{ vars.DEV_STAGING_KOPS_STATE_STORAGE }}
-      repository: dictyBase/static-server.git
-      image: goran
-      ref: develop
-      dockerfile: Dockerfile
-      namespace: cybersiddhu
