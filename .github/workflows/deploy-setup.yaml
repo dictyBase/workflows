@@ -18,7 +18,7 @@ env:
   KOPS_MODULE: github.com/dictybase-docker/dagger-of-dcr/kops@main
 
 jobs:
-  deploy:
+  deploy-setup:
     permissions:
       contents: 'read'
       id-token: 'write'

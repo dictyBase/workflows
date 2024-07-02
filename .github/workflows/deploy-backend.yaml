@@ -46,7 +46,7 @@ env:
   PULUMI_MODULE: github.com/dictybase-docker/dagger-of-dcr/pulumi-ops@main
 
 jobs:
-  deploy:
+  deploy-backend:
     runs-on: ubuntu-latest
     steps:
       - name: manage paths
