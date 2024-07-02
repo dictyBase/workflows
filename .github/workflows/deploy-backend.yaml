@@ -6,6 +6,10 @@ on:
           type: string
           description: deploy group either of backend or frontend
           default: backend
+        run_id:
+          type: number
+          required: true
+          description: github workflow runner id
     #   repository:
     #     required: true
     #     type: string
@@ -70,6 +74,7 @@ jobs:
         with: 
           name: kubectl-config
           path: ${{ env.KUBECONFIG }}
+          run-id: ${{ inputs.run_id }}
 
       - name: verify kubectl
         run: kubectl get nodes
