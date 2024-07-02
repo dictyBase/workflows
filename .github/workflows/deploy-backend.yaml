@@ -46,7 +46,8 @@ on:
 
 env:
   DAGGER_BIN_PATH: /tmp/dag/bin
-  KUBECONFIG: /tmp/config/dictycr.yaml
+  KUBECONFIG_FOLDER: /tmp/config
+  KUBECONFIG: ${{ env.KUBECONFIG_FOLDER }}/dictycr.yaml
   PULUMI_MODULE: github.com/dictybase-docker/dagger-of-dcr/pulumi-ops@main
 
 jobs:
@@ -73,7 +74,7 @@ jobs:
         uses: actions/download-artifact@v4
         with: 
           name: kubectl-config
-          path: ${{ env.KUBECONFIG }}
+          path: ${{ env.KUBECONFIG_FOLDER }}
           run-id: ${{ inputs.run_id }}
 
       - name: verify kubectl
