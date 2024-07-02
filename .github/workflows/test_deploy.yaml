@@ -8,8 +8,10 @@ on:
 jobs:
   deploy-setup:
     uses: ./.github/workflows/deploy-setup.yaml
+    secrets: inherit
     with:
-      cluster: ${{ secrets.DEV_STAGING_CLUSTER }}
-      cluster_state_storage: ${{ secrets.DEV_STAGING_KOPS_STATE_STORAGE }}
+      cluster: ${{ vars.DEV_STAGING_CLUSTER }}
+      cluster_state_storage: ${{ vars.DEV_STAGING_KOPS_STATE_STORAGE }}
   deploy-backend:
+    secrets: inherit
     uses: ./.github/workflows/deploy-backend.yaml
