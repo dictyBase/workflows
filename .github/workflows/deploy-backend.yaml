@@ -1,7 +1,11 @@
 name: deploy backend dcr application
 on:
   workflow_call:
-    # inputs:
+    inputs:
+        deploy_group:
+          type: string
+          description: deploy group either of backend or frontend
+          default: backend
     #   repository:
     #     required: true
     #     type: string
@@ -35,10 +39,6 @@ on:
     #     type: string
     #     description: "location of pulumi state"
     #     default: "gs://dictycr-pulumi-state"
-      deploy_group:
-        type: string
-        description: deploy group either of backend or frontend
-        default: backend
 
 env:
   DAGGER_BIN_PATH: /tmp/dag/bin
