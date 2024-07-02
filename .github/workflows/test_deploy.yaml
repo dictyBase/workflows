@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy-setup:
-    uses: ./.github/workflows/deploy-app.yaml
+    uses: ./.github/workflows/deploy-setup.yaml
     with:
       cluster: ${{ secrets.DEV_STAGING_CLUSTER }}
       cluster_state_storage: ${{ secrets.DEV_STAGING_KOPS_STATE_STORAGE }}
