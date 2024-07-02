@@ -12,4 +12,4 @@ jobs:
       cluster: ${{ secrets.DEV_STAGING_CLUSTER }}
       cluster_state_storage: ${{ secrets.DEV_STAGING_KOPS_STATE_STORAGE }}
   deploy-backend:
-    uses: ./github/workflows/deploy-backend.yaml
+    uses: ./.github/workflows/deploy-backend.yaml
