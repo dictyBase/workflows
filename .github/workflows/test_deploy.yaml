@@ -15,3 +15,6 @@ jobs:
   deploy-backend:
     secrets: inherit
     uses: ./.github/workflows/deploy-backend.yaml
+    needs: deploy-setup
+    with:
+      run_id: ${{ needs.deploy-setup.outputs.workflow_run_id }}
