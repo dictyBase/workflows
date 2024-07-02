@@ -14,7 +14,7 @@ on:
 env:
   ACTION_BIN_PATH: /tmp/github_actions/bin
   DAGGER_BIN_PATH: /tmp/dag/bin
-  KUBECTL_CONFIG: /tmp/config/dictycr.yaml
+  KUBECONFIG: /tmp/config/dictycr.yaml
   KOPS_MODULE: github.com/dictybase-docker/dagger-of-dcr/kops@main
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: manage paths
         run: |
-          mkdir -p $ACTION_BIN_PATH $DAGGER_BIN_PATH $(dirname $KUBECTL_CONFIG)
+          mkdir -p $ACTION_BIN_PATH $DAGGER_BIN_PATH $(dirname $KUBECONFIG)
           echo $ACTION_BIN_PATH >> $GITHUB_PATH
           echo $DAGGER_BIN_PATH >> $GITHUB_PATH
 
@@ -60,16 +60,16 @@ jobs:
 
       - name: export kubectl
         run: |
-          dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-state-storage --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECTL_CONFIG
+          dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-state-storage --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=$KUBECONFIG
 
       - name: verify kubectl
-        run: kubectl --kubeconfig $KUBECTL_CONFIG get nodes
+        run: kubectl get nodes
 
       - name: share kubectl
         uses: actions/upload-artifact@v4
         with: 
           name: kubectl-config
-          path: ${{ env.KUBECTL_CONFIG }}
+          path: ${{ env.KUBECONFIG }}
           if-no-files-found: error
           retention-days: 0
           overwrite: true
