@@ -7,7 +7,7 @@ on:
           description: deploy group either of backend or frontend
           default: backend
         run_id:
-          type: number
+          type: string
           required: true
           description: github workflow runner id
     #   repository:
