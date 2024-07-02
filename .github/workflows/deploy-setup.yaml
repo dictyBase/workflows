@@ -10,6 +10,10 @@ on:
         required: true
         type: string
         description: "location of cluster state"
+    outputs:
+      workflow_run_id:
+        description: "The ID of the GitHub workflow run"
+        value: ${{ jobs.deploy-setup.outputs.workflow_run_id }}
 
 env:
   ACTION_BIN_PATH: /tmp/github_actions/bin
@@ -23,6 +27,8 @@ jobs:
       contents: 'read'
       id-token: 'write'
     runs-on: ubuntu-latest
+    outputs:
+      workflow_run_id: ${{ steps.export_run_id.outputs.run_id }}
     steps:
       - name: manage paths
         run: |
@@ -74,5 +80,8 @@ jobs:
           retention-days: 0
           overwrite: true
 
+      - name: Export GitHub Workflow Run ID
+        id: export_run_id
+        run: echo "run_id=${{ github.run_id }}" >> $GITHUB_OUTPUT
 
 
