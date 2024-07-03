@@ -3,9 +3,9 @@ on:
   workflow_call:
     inputs:
       dagger_path:
-        required: true
         type: string
         description: path where dagger binary will be kept
+        default: /tmp/dag/bin
     outputs:
       dagger_checksum:
         description: "The checksum of the Dagger binary"

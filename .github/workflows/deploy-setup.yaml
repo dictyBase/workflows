@@ -2,6 +2,10 @@ name: Setup Deployment Environment for DCR Application
 on:
   workflow_call:
     inputs:
+      dagger_path:
+        type: string
+        description: path where dagger binary will be kept
+        default: /tmp/dag/bin
       cluster:
         required: true
         type: string
@@ -45,6 +49,8 @@ jobs:
       - name: setup dagger version and checksum
         id: dag_check
         run: actions sc
+          mkdir -p ${{ inputs.dagger_path }} $(dirname $KUBECONFIG)
+          echo ${{ inputs.dagger_path }} >> $GITHUB_PATH
 
       - name: try to restore dagger binary cache with dagger version and checksum
         id: restore_dagger_bin_cache
