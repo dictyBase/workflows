@@ -10,6 +10,18 @@ on:
           type: string
           required: true
           description: github workflow runner id
+        dagger_version:
+          required: true
+          type: string
+          description: "version of the Dagger binary"
+        dagger_checksum:
+          required: true
+          type: string
+          description: "checksum of the Dagger binary"
+        dagger_path:
+          type: string
+          description: path where dagger binary will be kept
+          default: /tmp/dag/bin
     #   repository:
     #     required: true
     #     type: string
