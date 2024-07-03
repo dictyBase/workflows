@@ -20,7 +20,6 @@ on:
         value: ${{ jobs.deploy-setup.outputs.workflow_run_id }}
 
 env:
-  ACTION_BIN_PATH: /tmp/github_actions/bin
   DAGGER_BIN_PATH: /tmp/dag/bin
   KUBECONFIG: /tmp/config/dictycr.yaml
   KOPS_MODULE: github.com/dictybase-docker/dagger-of-dcr/kops@main
@@ -36,19 +35,6 @@ jobs:
     steps:
       - name: manage paths
         run: |
-          mkdir -p $ACTION_BIN_PATH $DAGGER_BIN_PATH $(dirname $KUBECONFIG)
-          echo $ACTION_BIN_PATH >> $GITHUB_PATH
-          echo $DAGGER_BIN_PATH >> $GITHUB_PATH
-
-      - name: download and setup path for github actions binary
-        run: |
-          curl -L -o ${ACTION_BIN_PATH}/actions \
-            https://github.com/dictybase-docker/github-actions/releases/download/v2.8.0/action_2.8.0_linux_amd64
-          chmod +x ${ACTION_BIN_PATH}/actions
-
-      - name: setup dagger version and checksum
-        id: dag_check
-        run: actions sc
           mkdir -p ${{ inputs.dagger_path }} $(dirname $KUBECONFIG)
           echo ${{ inputs.dagger_path }} >> $GITHUB_PATH
 
