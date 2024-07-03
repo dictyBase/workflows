@@ -8,6 +8,7 @@ on:
 jobs:
   setup-dagger:
     uses: ./.github/workflows/setup-dagger.yaml
+
   deploy-setup:
     needs: setup-dagger
     uses: ./.github/workflows/deploy-setup.yaml
@@ -15,10 +16,14 @@ jobs:
     with:
       cluster: ${{ vars.DEV_STAGING_CLUSTER }}
       cluster_state_storage: ${{ vars.DEV_STAGING_KOPS_STATE_STORAGE }}
+      dagger_version: ${{ needs.setup-dagger.outputs.dagger_version }}
+      dagger_checksum: ${{ needs.setup-dagger.outputs.dagger_checksum }}
+
   deploy-backend:
     needs: deploy-setup
     uses: ./.github/workflows/deploy-backend.yaml
     secrets: inherit
     with:
       run_id: ${{ needs.deploy-setup.outputs.workflow_run_id }}
-
+      dagger_version: ${{ needs.setup-dagger.outputs.dagger_version }}
+      dagger_checksum: ${{ needs.setup-dagger.outputs.dagger_checksum }}
