@@ -52,11 +52,6 @@ jobs:
           path: ${{ inputs.dagger_path }}
           key: ${{ runner.os }}-${{ inputs.dagger_version }}-${{ inputs.dagger_checksum }}
 
-      - if: steps.restore_dagger_bin_cache.outputs.cache-hit != 'true'
-        name: install dagger if the bin cache not restored
-        id: dag_install
-        run: actions sd --dagger-version ${{ inputs.dagger_version }} --dagger-bin-dir ${{ inputs.dagger_path }}
-
       - uses: actions/checkout@v4
       - uses: google-github-actions/auth@v2
         id: gcp_authentication

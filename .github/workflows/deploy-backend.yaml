@@ -57,7 +57,6 @@ on:
     #     default: "gs://dictycr-pulumi-state"
 
 env:
-  DAGGER_BIN_PATH: /tmp/dag/bin
   KUBECONFIG_FOLDER: /tmp/config
   KUBECONFIG: /tmp/config/dictycr.yaml
   PULUMI_MODULE: github.com/dictybase-docker/dagger-of-dcr/pulumi-ops@main
@@ -68,8 +67,8 @@ jobs:
     steps:
       - name: manage paths
         run: |
-          mkdir -p $DAGGER_BIN_PATH 
-          echo $DAGGER_BIN_PATH >> $GITHUB_PATH
+          mkdir -p ${{ inputs.dagger_path }} 
+          echo ${{ inputs.dagger_path }} >> $GITHUB_PATH
 
       # - name: setup dagger version and checksum
       #   id: dag_check
