@@ -5,15 +5,9 @@ on:
     branches:
       - develop
 
-env:
-  DAGGER_BIN_PATH: /tmp/dag/bin
-
 jobs:
   setup-dagger:
     uses: ./.github/workflows/setup-dagger.yaml
-    with:
-      dagger_path: ${{ env.DAGGER_BIN_PATH }}
-
   deploy-setup:
     needs: setup-dagger
     uses: ./.github/workflows/deploy-setup.yaml
@@ -21,7 +15,6 @@ jobs:
     with:
       cluster: ${{ vars.DEV_STAGING_CLUSTER }}
       cluster_state_storage: ${{ vars.DEV_STAGING_KOPS_STATE_STORAGE }}
-
   deploy-backend:
     needs: deploy-setup
     uses: ./.github/workflows/deploy-backend.yaml
