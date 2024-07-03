@@ -70,16 +70,12 @@ jobs:
           mkdir -p ${{ inputs.dagger_path }} 
           echo ${{ inputs.dagger_path }} >> $GITHUB_PATH
 
-      # - name: setup dagger version and checksum
-      #   id: dag_check
-      #   run: actions sc
-      #
-      # - name: try to restore dagger binary cache with dagger version and checksum
-      #   id: restore_dagger_bin_cache
-      #   uses: actions/cache@v4
-      #   with: 
-      #     path: ${{ env.DAGGER_BIN_PATH }}
-      #     key: ${{ runner.os }}-${{ steps.dag_check.outputs.dagger_version}}-${{ steps.dag_check.outputs.dagger_bin_checksum }}
+      - name: try to restore dagger binary cache with dagger version and checksum
+        id: restore_dagger_bin_cache
+        uses: actions/cache@v4
+        with: 
+          path: ${{ inputs.dagger_path }}
+          key: ${{ runner.os }}-${{ inputs.dagger_version }}-${{ inputs.dagger_checksum }}
 
       - name: download kubectl
         uses: actions/download-artifact@v4
