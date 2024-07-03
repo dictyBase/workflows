@@ -1,7 +1,7 @@
 name: Setup Dagger Binary and Cache
 on:
   workflow_call:
-    inputs: 
+    inputs:
       dagger_path:
         required: true
         type: string
@@ -14,6 +14,9 @@ on:
         description: "The version of the Dagger binary"
         value: ${{ jobs.setup-dagger.outputs.dagger_version }}
 
+env:
+  ACTION_BIN_PATH: /tmp/github_actions/bin
+
 jobs:
   setup-dagger:
     runs-on: ubuntu-latest
@@ -23,8 +26,15 @@ jobs:
     steps:
       - name: manage paths
         run: |
-          mkdir -p ${{ inputs.dagger_path }}
+          mkdir -p $ACTION_BIN_PATH ${{ inputs.dagger_path }}
+          echo $ACTION_BIN_PATH >> $GITHUB_PATH
           echo ${{ inputs.dagger_path }} >> $GITHUB_PATH
+
+      - name: download and setup path for github actions binary
+        run: |
+          curl -L -o ${ACTION_BIN_PATH}/actions \
+            https://github.com/dictybase-docker/github-actions/releases/download/v2.8.0/action_2.8.0_linux_amd64
+          chmod +x ${ACTION_BIN_PATH}/actions
 
       - name: setup dagger version and checksum
         id: dag_check
