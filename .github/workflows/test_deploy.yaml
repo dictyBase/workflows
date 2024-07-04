@@ -6,18 +6,18 @@ on:
       - develop
 
 jobs:
-  setup-dagger:
-    uses: ./.github/workflows/setup-dagger.yaml
+  dagger-setup:
+    uses: ./.github/workflows/dagger-setup.yaml
 
   deploy-setup:
-    needs: setup-dagger
+    needs: dagger-setup
     uses: ./.github/workflows/deploy-setup.yaml
     secrets: inherit
     with:
       cluster: ${{ vars.DEV_STAGING_CLUSTER }}
       cluster_state_storage: ${{ vars.DEV_STAGING_KOPS_STATE_STORAGE }}
-      dagger_version: ${{ needs.setup-dagger.outputs.dagger_version }}
-      dagger_checksum: ${{ needs.setup-dagger.outputs.dagger_checksum }}
+      dagger_version: ${{ needs.dagger-setup.outputs.dagger_version }}
+      dagger_checksum: ${{ needs.dagger-setup.outputs.dagger_checksum }}
 
   deploy-backend:
     needs: deploy-setup
