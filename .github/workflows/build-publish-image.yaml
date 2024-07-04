@@ -1,0 +1,70 @@
+name: Build and Publish Docker Image using Dagger
+on:
+  workflow_call:
+    inputs:
+      repository:
+        required: true
+        type: string
+        description: "Repository name with owner"
+      image:
+        required: true
+        type: string 
+        description: "Name of docker image"
+      ref:
+        required: true
+        type: string
+        description: "The branch, tag, or SHA to checkout"
+      dockerfile:
+        required: true
+        type: string
+        description: "Location of the Dockerfile"
+      namespace:
+        type: string
+        default: dictybase
+        description: "Namespace to use for the Docker image"
+      dagger_version:
+        required: true
+        type: string
+        description: "Version of the Dagger binary"
+      dagger_checksum:
+        required: true
+        type: string
+        description: "Checksum of the Dagger binary"
+      dagger_path:
+        type: string
+        description: path where dagger binary will be kept
+        default: /tmp/dag/bin
+    outputs:
+      image_tag:
+        description: "The tag of the published Docker image"
+        value: ${{ jobs.docker.outputs.image_tag }}
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.publish.outputs.image_url }}
+    steps:
+      - name: manage paths
+        run: |
+          mkdir -p ${{ inputs.dagger_path }}
+          echo ${{ inputs.dagger_path }} >> $GITHUB_PATH
+
+      - name: try to restore dagger binary cache with dagger version and checksum
+        id: restore_dagger_bin_cache
+        uses: actions/cache@v4
+        with: 
+          path: ${{ inputs.dagger_path }}
+          key: ${{ runner.os }}-${{ inputs.dagger_version }}-${{ inputs.dagger_checksum }}
+
+      - name: build and publish docker image
+        id: publish
+        run: |
+          output=$(dagger call -m github.com/dictybase-docker/dagger-of-dcr/container-image@main \
+            with-image --image=${{ inputs.image }} \
+            with-ref --ref=${{ inputs.ref }} \
+            with-dockerfile --docker-file=${{ inputs.dockerfile }} \
+            with-namespace --namespace=${{ inputs.namespace }} \
+            with-repository --repository=${{ format('https://github.com/{0}', inputs.repository) }} \
+            publish-from-repo --user=${{ secrets.DOCKERHUB_USER }} --password=${{ secrets.DOCKER_PASS }})
+          echo "image_tag=${output}" >> $GITHUB_OUTPUT
