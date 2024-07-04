@@ -2,10 +2,6 @@ name: deploy backend dcr application
 on:
   workflow_call:
     inputs:
-        deploy_group:
-          type: string
-          description: deploy group either of backend or frontend
-          default: backend
         run_id:
           type: string
           required: true
@@ -22,39 +18,10 @@ on:
           type: string
           description: path where dagger binary will be kept
           default: /tmp/dag/bin
-    #   repository:
-    #     required: true
-    #     type: string
-    #     description: "Repository name with owner"
-    #   image:
-    #     required: true
-    #     type: string 
-    #     description: "Name of docker image"
-    #   ref:
-    #     required: true
-    #     type: string
-    #     description: "The branch,tag or SHA to checkout"
-    #   dockerfile:
-    #     required: true
-    #     type: string
-    #     description: "location of the docker file"
-    #   namespace:
-    #     required: false
-    #     type: string
-    #     default: "dictybase"
-    #     description: "namespace to use for docker image"
-    #   cluster:
-    #     required: true
-    #     type: string
-    #     description: "name of kubernetes cluster"
-    #   cluster_state_storage:
-    #     required: true
-    #     type: string
-    #     description: "location of cluster state"
-    #   pulumi_state_storage:
-    #     type: string
-    #     description: "location of pulumi state"
-    #     default: "gs://dictycr-pulumi-state"
+        pulumi_state_storage:
+          type: string
+          description: "location of pulumi state"
+          default: "gs://dictycr-pulumi-state"
 
 env:
   KUBECONFIG_FOLDER: /tmp/config
@@ -84,8 +51,11 @@ jobs:
           path: ${{ env.KUBECONFIG_FOLDER }}
           run-id: ${{ inputs.run_id }}
 
-      - name: verify kubectl
-        run: kubectl get nodes
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        id: gcp_authentication
+        with:
+          credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
 
-      # - name: verify pulumi
-      #   run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-pulumi login
+      - name: verify pulumi
+        run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-pulumi login
