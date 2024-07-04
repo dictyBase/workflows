@@ -7,7 +7,7 @@ on:
 
 jobs:
   setup-dagger:
-    uses: ./.github/workflows/setup-dagger.yaml
+    uses: ./.github/workflows/dagger-setup.yaml
 
   build-publish-image:
     needs: setup-dagger
