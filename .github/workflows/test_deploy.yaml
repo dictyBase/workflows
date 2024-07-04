@@ -6,18 +6,30 @@ on:
       - develop
 
 jobs:
-  dagger-setup:
-    uses: ./.github/workflows/dagger-setup.yaml
+  setup-dagger:
+    uses: ./.github/workflows/setup-dagger.yaml
+
+  build-publish-image:
+    needs: setup-dagger
+    uses: ./.github/workflows/build-publish-image.yaml
+    secrets: inherit
+    with:
+      repository: ${{ vars.REPOSITORY }}
+      image: ${{ vars.IMAGE }}
+      ref: ${{ vars.REF }}
+      dockerfile: ${{ vars.DOCKERFILE }}
+      dagger_version: ${{ needs.setup-dagger.outputs.dagger_version }}
+      dagger_checksum: ${{ needs.setup-dagger.outputs.dagger_checksum }}
 
   deploy-setup:
-    needs: dagger-setup
+    needs: setup-dagger
     uses: ./.github/workflows/deploy-setup.yaml
     secrets: inherit
     with:
       cluster: ${{ vars.DEV_STAGING_CLUSTER }}
       cluster_state_storage: ${{ vars.DEV_STAGING_KOPS_STATE_STORAGE }}
-      dagger_version: ${{ needs.dagger-setup.outputs.dagger_version }}
-      dagger_checksum: ${{ needs.dagger-setup.outputs.dagger_checksum }}
+      dagger_version: ${{ needs.setup-dagger.outputs.dagger_version }}
+      dagger_checksum: ${{ needs.setup-dagger.outputs.dagger_checksum }}
 
   deploy-backend:
     needs: deploy-setup
