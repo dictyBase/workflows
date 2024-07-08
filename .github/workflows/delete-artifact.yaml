@@ -1,0 +1,23 @@
+name: Delete Artifact
+
+on:
+  workflow_call:
+    inputs:
+      artifact_name:
+        required: true
+        type: string
+        description: "Name of the artifact to delete"
+
+jobs:
+  delete-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install artifact package
+        run: npm i @actions/artifact
+      - name: Delete artifact
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {DefaultArtifactClient} = require('@actions/artifact')
+            const artifact = new DefaultArtifactClient()
+            await artifact.deleteArtifact(${{ inputs.artifact_name }})
