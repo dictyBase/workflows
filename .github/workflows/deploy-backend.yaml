@@ -2,6 +2,14 @@ name: deploy backend dcr application
 on:
   workflow_call:
     inputs:
+        app:
+          type: string
+          required: true
+          description: backend application to be deployed, should be one of content, annotation, order or stock
+        image_tag:
+          type: string
+          required: true
+          description: docker image tag of the application to be deployed
         run_id:
           type: string
           required: true
@@ -44,8 +52,9 @@ jobs:
           path: ${{ inputs.dagger_path }}
           key: ${{ runner.os }}-${{ inputs.dagger_version }}-${{ inputs.dagger_checksum }}
 
-      - name: download kubectl
+      - name: download kubectl from artifact
         uses: actions/download-artifact@v4
+        id: cluster_config
         with: 
           name: kubectl-config
           path: ${{ env.KUBECONFIG_FOLDER }}
@@ -59,3 +68,6 @@ jobs:
 
       - name: verify pulumi
         run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-pulumi login
+
+      - name: deploy backend application
+        run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-kube-config --config=${{ steps.cluster_config.outputs.download-path }} with-pulumi deploy-app --app=${{ inputs.app }} --tag={{ $inputs.image_tag }}
