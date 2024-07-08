@@ -32,6 +32,12 @@ jobs:
       dagger_version: ${{ needs.setup-dagger.outputs.dagger_version }}
       dagger_checksum: ${{ needs.setup-dagger.outputs.dagger_checksum }}
 
+  delete-artifact:
+    needs: deploy-setup
+    uses: ./.github/workflows/delete-artifact.yaml
+    with:
+      artifact_name: kubectl-config
+
   # deploy-backend:
   #   needs: [setup-dagger, build-publish-image, deploy-setup]
   #   uses: ./.github/workflows/deploy-backend.yaml
