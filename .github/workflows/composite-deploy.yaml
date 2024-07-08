@@ -68,3 +68,9 @@ jobs:
       dagger_checksum: ${{ needs.dagger-setup.outputs.dagger_checksum }}
       image_tag: ${{ needs.build-publish-image.outputs.image_tag }}
       app: ${{ inputs.app }}
+
+  delete-artifact:
+    needs: deploy-backend
+    uses: ./.github/workflows/delete-artifact.yaml
+    with:
+      artifact_name: kubectl-config
