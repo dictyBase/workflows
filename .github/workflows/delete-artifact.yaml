@@ -20,4 +20,4 @@ jobs:
           script: |
             const {DefaultArtifactClient} = require('@actions/artifact')
             const artifact = new DefaultArtifactClient()
-            await artifact.deleteArtifact(${{ inputs.artifact_name }})
+            await artifact.deleteArtifact('${{ inputs.artifact_name }}')
