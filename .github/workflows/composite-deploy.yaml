@@ -31,11 +31,22 @@ on:
         required: true
         type: string
         description: "location of cluster state"
+      artifact_name:
+        required: true
+        type: string
+        description: "Name of the artifact to delete"
 
 jobs:
+  # Setup Dagger binary and cache
+  # Outputs:
+  # - dagger_version: The version of the Dagger binary
+  # - dagger_checksum: The checksum of the Dagger binary
   dagger-setup:
-    uses: ./.github/workflows/dagger-setup.yaml
+    uses: ./.github/workflows/setup-dagger.yaml
 
+  # Build and publish Docker image
+  # Outputs:
+  # - image_tag: The tag of the published Docker image
   build-publish-image:
     needs: dagger-setup
     uses: ./.github/workflows/build-publish-image.yaml
@@ -48,6 +59,9 @@ jobs:
       dagger_version: ${{ needs.dagger-setup.outputs.dagger_version }}
       dagger_checksum: ${{ needs.dagger-setup.outputs.dagger_checksum }}
 
+  # Setup deployment environment
+  # Outputs:
+  # - workflow_run_id: The ID of the GitHub workflow run
   deploy-setup:
     needs: build-publish-image
     uses: ./.github/workflows/deploy-setup.yaml
@@ -58,6 +72,8 @@ jobs:
       dagger_version: ${{ needs.dagger-setup.outputs.dagger_version }}
       dagger_checksum: ${{ needs.dagger-setup.outputs.dagger_checksum }}
 
+  # Deploy backend application
+  # No outputs
   deploy-backend:
     needs: [dagger-setup, build-publish-image, deploy-setup]
     uses: ./.github/workflows/deploy-backend.yaml
@@ -69,8 +85,10 @@ jobs:
       image_tag: ${{ needs.build-publish-image.outputs.image_tag }}
       app: ${{ inputs.app }}
 
+  # Delete kubectl artifact
+  # No outputs
   delete-artifact:
     needs: deploy-backend
     uses: ./.github/workflows/delete-artifact.yaml
     with:
-      artifact_name: kubectl-config
+      artifact_name: ${{ inputs.artifact_name }}
