@@ -42,7 +42,7 @@ jobs:
   # - dagger_version: The version of the Dagger binary
   # - dagger_checksum: The checksum of the Dagger binary
   dagger-setup:
-    uses: ./.github/workflows/setup-dagger.yaml
+    uses: ./.github/workflows/dagger-setup.yaml
 
   # Build and publish Docker image
   # Outputs:
