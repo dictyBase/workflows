@@ -63,7 +63,7 @@ jobs:
   # Outputs:
   # - workflow_run_id: The ID of the GitHub workflow run
   deploy-setup:
-    needs: build-publish-image
+    needs: dagger-setup
     uses: ./.github/workflows/deploy-setup.yaml
     secrets: inherit
     with:
