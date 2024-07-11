@@ -32,7 +32,7 @@ on:
         type: string
         description: "location of cluster state"
       artifact_name:
-        required: true
+        default: kubectl-config
         type: string
         description: "Name of the artifact to delete"
 
@@ -71,6 +71,7 @@ jobs:
       cluster_state_storage: ${{ inputs.cluster_state_storage }}
       dagger_version: ${{ needs.dagger-setup.outputs.dagger_version }}
       dagger_checksum: ${{ needs.dagger-setup.outputs.dagger_checksum }}
+      artifact_name: ${{ inputs.artifact_name }}
 
   # Deploy backend application
   # No outputs
@@ -92,3 +93,4 @@ jobs:
     uses: ./.github/workflows/delete-artifact.yaml
     with:
       artifact_name: ${{ inputs.artifact_name }}
+

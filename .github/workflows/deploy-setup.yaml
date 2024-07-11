@@ -22,6 +22,10 @@ on:
         type: string
         description: path where dagger binary will be kept
         default: /tmp/dag/bin
+      artifact_name:
+        required: true
+        type: string
+        description: "Name of the artifact to delete"
     outputs:
       workflow_run_id:
         description: "The ID of the GitHub workflow run"
@@ -68,7 +72,7 @@ jobs:
       - name: share kubectl
         uses: actions/upload-artifact@v4
         with: 
-          name: kubectl-config
+          name: ${{ inputs.artifact_name }}
           path: ${{ env.KUBECONFIG }}
           if-no-files-found: error
           retention-days: 0
