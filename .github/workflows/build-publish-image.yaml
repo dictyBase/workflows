@@ -43,7 +43,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     outputs:
-      image_tag: ${{ steps.publish.outputs.image_url }}
+      image_tag: ${{ steps.publish.outputs.image_tag }}
     steps:
       - name: manage paths
         run: |
