@@ -38,7 +38,7 @@ jobs:
       - name: run dagger function
         uses: dagger/dagger-for-github@v5
         with:
-          version: "latest"
+          version: 0.11.9
           verb: call
           module: github.com/dictybase-docker/dagger-of-dcr/container-image@main
           args: with-image --image=${{ inputs.image }} with-ref --ref=${{ inputs.ref }} with-dockerfile --docker-file=${{ inputs.dockerfile }} with-namespace --namespace=${{ inputs.namespace }} with-repository --repository=${{ format('https://github.com/{0}',inputs.repository) }} publish-from-repo --user=${{ secrets.dockeruser }} --password=${{ secrets.dockerpass }}
