@@ -33,12 +33,12 @@ jobs:
       - name: download and setup path for github actions binary
         run: |
           curl -L -o ${ACTION_BIN_PATH}/actions \
-            https://github.com/dictybase-docker/github-actions/releases/download/v2.8.0/action_2.8.0_linux_amd64
+            https://github.com/dictybase-docker/github-actions/releases/download/v2.9.0/action_2.9.0_linux_amd64
           chmod +x ${ACTION_BIN_PATH}/actions
 
       - name: setup dagger version and checksum
         id: dag_check
-        run: actions sc
+        run: actions sc --version 0.11.9
 
       - name: try to restore dagger binary cache with dagger version and checksum
         id: restore_dagger_bin_cache
