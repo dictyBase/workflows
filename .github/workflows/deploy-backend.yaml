@@ -30,6 +30,10 @@ on:
           type: string
           description: "location of pulumi state"
           default: "gs://dictycr-pulumi-state"
+        artifact_name:
+          required: true
+          type: string
+          description: "Name of the artifact to download"
 
 env:
   KUBECONFIG_FOLDER: /tmp/config
@@ -56,7 +60,7 @@ jobs:
         uses: actions/download-artifact@v4
         id: cluster_config
         with: 
-          name: kubectl-config
+          name: ${{ inputs.artifact_name }}
           path: ${{ env.KUBECONFIG_FOLDER }}
           run-id: ${{ inputs.run_id }}
 
@@ -70,4 +74,4 @@ jobs:
         run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-pulumi login
 
       - name: deploy backend application
-        run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-kube-config --config=${{ steps.cluster_config.outputs.download-path }} with-pulumi deploy-app --app=${{ inputs.app }} --tag=${{ inputs.image_tag }}
+        run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-kube-config --config=${{ format('{0}/{1}', steps.cluster_config.outputs.download-path, inputs.artifact_name) }} with-pulumi deploy-app --app=${{ inputs.app }} --tag=${{ inputs.image_tag }}
