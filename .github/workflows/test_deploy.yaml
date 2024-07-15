@@ -31,6 +31,7 @@ jobs:
       cluster_state_storage: ${{ vars.DEV_STAGING_KOPS_STATE_STORAGE }}
       dagger_version: ${{ needs.setup-dagger.outputs.dagger_version }}
       dagger_checksum: ${{ needs.setup-dagger.outputs.dagger_checksum }}
+      artifact_name: kubectl-config
 
   debug-artifact:
     runs-on: ubuntu-latest
