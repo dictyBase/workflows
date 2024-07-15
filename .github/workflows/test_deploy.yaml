@@ -3,7 +3,7 @@ name: Test Deploy
 on:
   push:
     branches:
-      - develops
+      - develop
 
 jobs:
   setup-dagger:
@@ -32,8 +32,23 @@ jobs:
       dagger_version: ${{ needs.setup-dagger.outputs.dagger_version }}
       dagger_checksum: ${{ needs.setup-dagger.outputs.dagger_checksum }}
 
-  delete-artifact:
+  debug-artifact:
+    runs-on: ubuntu-latest
     needs: deploy-setup
+    steps: 
+      - name: download kubectl from artifact
+        uses: actions/download-artifact@v4
+        id: cluster_config
+        with: 
+          name: kubectl-config
+          path: /tmp/config
+          run_id: ${{ needs.deploy-setup.outputs.workflow_run_id }}
+      - name: list files in download folder
+        run: ls -l /tmp/config/
+      
+
+  delete-artifact:
+    needs: debug-artifact
     uses: ./.github/workflows/delete-artifact.yaml
     with:
       artifact_name: kubectl-config
