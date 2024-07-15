@@ -43,7 +43,7 @@ jobs:
         with: 
           name: kubectl-config
           path: /tmp/config
-          run_id: ${{ needs.deploy-setup.outputs.workflow_run_id }}
+          run-id: ${{ needs.deploy-setup.outputs.workflow_run_id }}
       - name: list files in download folder
         run: ls -l /tmp/config/
       
