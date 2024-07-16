@@ -71,7 +71,7 @@ jobs:
           dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-state-storage --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=${{ format('{0}/{1}', env.KUBECONFIG_FOLDER, inputs.kubectl_config_file) }}
 
       - name: verify kubectl
-        run: kubectl get nodes
+        run: kubectl get nodes --kubeconfig=${{ format('{0}/{1}', env.KUBECONFIG_FOLDER, inputs.kubectl_config_file) }}
 
       - name: share kubectl
         uses: actions/upload-artifact@v4
