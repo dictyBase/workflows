@@ -39,6 +39,10 @@ on:
         type: string
         default: dictycr.yaml
         description: "Name of the kubectl config file"
+      stack:
+        type: string
+        default: dev
+        description: "Name of the Pulumi stack to use"
 
 jobs:
   # Setup Dagger binary and cache
@@ -92,6 +96,7 @@ jobs:
       app: ${{ inputs.app }}
       artifact_name: ${{ inputs.artifact_name }}
       kubectl_config_file: ${{ inputs.kubectl_config_file }}
+      stack: ${{ inputs.stack }}
 
   # Delete kubectl artifact
   # No outputs
@@ -100,4 +105,6 @@ jobs:
     uses: ./.github/workflows/delete-artifact.yaml
     with:
       artifact_name: ${{ inputs.artifact_name }}
+
+
 
