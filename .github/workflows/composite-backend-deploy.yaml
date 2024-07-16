@@ -35,6 +35,10 @@ on:
         default: kubectl-config
         type: string
         description: "Name of the artifact to delete"
+      kubectl_config_file:
+        type: string
+        default: dictycr.yaml
+        description: "Name of the kubectl config file"
 
 jobs:
   # Setup Dagger binary and cache
@@ -72,6 +76,7 @@ jobs:
       dagger_version: ${{ needs.dagger-setup.outputs.dagger_version }}
       dagger_checksum: ${{ needs.dagger-setup.outputs.dagger_checksum }}
       artifact_name: ${{ inputs.artifact_name }}
+      kubectl_config_file: ${{ inputs.kubectl_config_file }}
 
   # Deploy backend application
   # No outputs
@@ -86,6 +91,7 @@ jobs:
       image_tag: ${{ needs.build-publish-image.outputs.image_tag }}
       app: ${{ inputs.app }}
       artifact_name: ${{ inputs.artifact_name }}
+      kubectl_config_file: ${{ inputs.kubectl_config_file }}
 
   # Delete kubectl artifact
   # No outputs
