@@ -34,10 +34,17 @@ on:
           required: true
           type: string
           description: "Name of the artifact to download"
+        kubectl_config_file:
+          required: true
+          type: string
+          description: "Name of the kubectl config file"
+    outputs:
+      workflow_run_id:
+        description: "The ID of the GitHub workflow run"
+        value: ${{ jobs.deploy-setup.outputs.workflow_run_id }}
 
 env:
   KUBECONFIG_FOLDER: /tmp/config
-  KUBECONFIG: /tmp/config/dictycr.yaml
   PULUMI_MODULE: github.com/dictybase-docker/dagger-of-dcr/pulumi-ops@main
 
 jobs:
@@ -74,4 +81,4 @@ jobs:
         run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-pulumi login
 
       - name: deploy backend application
-        run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-kube-config --config=${{ format('{0}/{1}', steps.cluster_config.outputs.download-path, inputs.artifact_name) }} with-pulumi deploy-app --app=${{ inputs.app }} --tag=${{ inputs.image_tag }}
+        run: dagger call -m $PULUMI_MODULE with-backend --backend ${{ inputs.pulumi_state_storage }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-kube-config --config=${{ format('{0}/{1}', steps.cluster_config.outputs.download-path, inputs.kubectl_config_file) }} with-pulumi deploy-app --app=${{ inputs.app }} --tag=${{ inputs.image_tag }}
