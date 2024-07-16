@@ -68,7 +68,7 @@ jobs:
 
       - name: export kubectl
         run: |
-          dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-state-storage --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=${{ format('{0}/{1}', env.KUBECONFIG_FOLDER, inputs.kubectl_config_file }} 
+          dagger call -m $KOPS_MODULE with-kops with-kubectl with-cluster --name=${{ inputs.cluster }} with-credentials --credentials=${{ steps.gcp_authentication.outputs.credentials_file_path }} with-state-storage --storage=${{ inputs.cluster_state_storage }} export-kubectl --output=${{ format('{0}/{1}', env.KUBECONFIG_FOLDER, inputs.kubectl_config_file) }}
 
       - name: verify kubectl
         run: kubectl get nodes
