@@ -43,6 +43,10 @@ on:
         type: string
         default: dev
         description: "Name of the Pulumi stack to use"
+      application_type:
+        type: string
+        default: microservice
+        description: "Type of the application to be deployed"
 
 jobs:
   # Setup Dagger binary and cache
@@ -85,6 +89,7 @@ jobs:
   # Deploy backend application
   # No outputs
   deploy-backend:
+    if: ${{ inputs.application_type == 'microservice' }}
     needs: [dagger-setup, build-publish-image, deploy-setup]
     uses: ./.github/workflows/deploy-backend.yaml
     secrets: inherit
@@ -105,6 +110,3 @@ jobs:
     uses: ./.github/workflows/delete-artifact.yaml
     with:
       artifact_name: ${{ inputs.artifact_name }}
-
-
-
