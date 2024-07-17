@@ -88,10 +88,10 @@ jobs:
 
   # Deploy backend application
   # No outputs
-  deploy-backend:
+  deploy-microservice:
     if: ${{ inputs.application_type == 'microservice' }}
     needs: [dagger-setup, build-publish-image, deploy-setup]
-    uses: ./.github/workflows/deploy-backend.yaml
+    uses: ./.github/workflows/deploy-microservice.yaml
     secrets: inherit
     with:
       run_id: ${{ needs.deploy-setup.outputs.workflow_run_id }}
@@ -106,7 +106,7 @@ jobs:
   # Delete kubectl artifact
   # No outputs
   delete-artifact:
-    needs: deploy-backend
+    needs: deploy-microservice
     uses: ./.github/workflows/delete-artifact.yaml
     with:
       artifact_name: ${{ inputs.artifact_name }}
