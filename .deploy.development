@@ -1,0 +1,15 @@
+APP=test
+DOCKERFILE=Dockerfile
+DOCKER_NAMESPACE=cybersiddhu
+DOCKER_IMAGE=goran
+REF=develop
+ARTIFACT_NAME=kubectl-config
+KUBECTL_CONFIG_FILE=test.yaml
+STACK=dev
+DAGGER_VERSION=0.11.9
+ENVIRONMENT=development
+REPOSITORY=dictyBase/static-server.git
+# should be set at runtime
+#CLUSTER=
+#CLUSTER_STATE_STORAGE=
+#PROJECT=
