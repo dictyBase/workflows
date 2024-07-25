@@ -11,12 +11,9 @@ create-bin-paths:
 	mkdir -p {{action_bin_path}} {{dagger_path}}
 manage-paths: create-bin-paths set-gha-path set-dagger-path
 
-setup-gha-binary:
+install-gha-binary:
           curl -L -o {{action_bin_path}} + "/actions" {{gha_download_url}}
           chmod +x {{action_bin_path}} + "/actions"
 
-setup-dag-ver-checksum:
-	actions sc --version $DAGGER_VERSION
-
-install-dagger:
+install-dagger-binary:
 	actions sd --dagger-version $DAGGER_VERSION --dagger-bin-dir {{dagger_path}}
