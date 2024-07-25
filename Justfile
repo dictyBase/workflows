@@ -1,6 +1,6 @@
 action_bin_path := "/tmp/github_actions/bin"
 dagger_path := "/tmp/dag/bin"
-gha_download_url := "https://github.com/dictybase-docker/github-actions/releases/download/v2.9.0/action_2.9.0_linux_amd64"
+gha_download_url := "https://github.com/dictybase-docker/github-actions/releases/download/v2.9.1/action_2.9.1_linux_amd64"
 set dotenv-filename := ".deploy.development"
 
 set-dagger-path:
