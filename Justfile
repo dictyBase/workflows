@@ -16,11 +16,11 @@ install-dagger-binary:
 	{{action_bin}} sd --dagger-version $DAGGER_VERSION --dagger-bin-dir {{bin_path}}
 
 
-export-kubectl cluster cluster-state gcp-credentials:
+export-kubectl cluster cluster-state gcp-credentials-file:
 	#!/usr/bin/env bash
 	set -euxo pipefail
-        dagger call -m {{kops_module}} with-kops with-kubectl \
+        {{dagger_bin}} call -m {{kops_module}} with-kops with-kubectl \
 		with-cluster --name={{cluster}} \ 
 		with-state-storage --storage={{cluster-state}} \
-		with-credentials --credentials={{gcp-credentials}} \
+		with-credentials --credentials={{gcp-credentials-file}} \
 		export-kubectl --output={{kubectl_file}}
