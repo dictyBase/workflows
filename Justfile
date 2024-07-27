@@ -1,4 +1,5 @@
-kops_module := "github.com/dictybase-docker/dagger-of-dcr/kops@main"
+kops_module := "github.com/dictybase-docker/dagger-of-dcr/gh-deployment@main"
+gh_deployment_module := "github.com/dictybase-docker/dagger-of-dcr/kops@develop"
 bin_path := `mktemp -d`
 action_bin := bin_path + "/actions"
 dagger_bin := bin_path + "/dagger"
