@@ -15,12 +15,29 @@ install-gha-binary:
 install-dagger-binary:
 	{{action_bin}} sd --dagger-version $DAGGER_VERSION --dagger-bin-dir {{bin_path}}
 
+export-kubectl cluster cluster-state gcp-credentials-file: setup
+    #!/usr/bin/env bash
+    set -euxo pipefail
+        {{dagger_bin}} call -m {{kops_module}} \
+        with-kops with-kubectl \
+        with-cluster --name={{cluster}} \ 
+        with-state-storage --storage={{cluster-state}} \
+        with-credentials --credentials={{gcp-credentials-file}} \
+        export-kubectl --output={{kubectl_file}}
 
-export-kubectl cluster cluster-state gcp-credentials-file:
-	#!/usr/bin/env bash
-	set -euxo pipefail
-        {{dagger_bin}} call -m {{kops_module}} with-kops with-kubectl \
-		with-cluster --name={{cluster}} \ 
-		with-state-storage --storage={{cluster-state}} \
-		with-credentials --credentials={{gcp-credentials-file}} \
-		export-kubectl --output={{kubectl_file}}
+deploy cluster cluster-state gcp-credentials-file ref user pass token: 
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    just export-kubectl {{cluster}} {{cluster-state}} {{gcp-credentials-file}}
+    {{dagger_bin}} call -m {{gh_deployment_module}} \ 
+        with-application --application=$APP \
+        with-docker-image --docker-image=$DOCKER_IMAGE \
+        with-docker-namespace --docker-namespace=$DOCKER_NAMESPACE \
+        with-dockerfile --dockerfile=$DOCKERFILE \
+        with-project --project=$PROJECT \ 
+        with-stack --stack=$STACK \
+        with-environment --environmant=$ENVIRONMENT \
+        with-repository --repository=$REPOSITORY \
+        with-ref --ref={{ref}} \
+        create-github-deployment --token={{token}}
+
