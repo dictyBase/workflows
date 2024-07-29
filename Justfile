@@ -1,11 +1,20 @@
+dagger_version := "v0.11.9"
 kops_module := "github.com/dictybase-docker/dagger-of-dcr/gh-deployment@main"
 gh_deployment_module := "github.com/dictybase-docker/dagger-of-dcr/kops@develop"
 bin_path := `mktemp -d`
 action_bin := bin_path + "/actions"
 dagger_bin := bin_path + "/dagger"
 kubectl_file := `mktemp -d` + "/dictycr.yaml"
-gha_download_url := "https://github.com/dictybase-docker/github-actions/releases/download/v2.9.1/action_2.9.1_linux_amd64"
+base_gha_download_url := "https://github.com/dictybase-docker/github-actions/releases/download/v2.10.0/action_2.10.0_"
+gha_download_url := if os() == "macos" {
+    base_gha_download_url + "darwin_arm64"
+} else {
+    base_gha_download_url + "linux_amd64"
+}
 set dotenv-filename := ".deploy.development"
+
+system-info:
+    @echo this is an {{arch()}} os {{os()}}
 
 setup: install-gha-binary install-dagger-binary
 [group('setup-tools')]
@@ -14,7 +23,7 @@ install-gha-binary:
 	chmod +x {{action_bin}} 
 [group('setup-tools')]
 install-dagger-binary:
-	{{action_bin}} sd --dagger-version $DAGGER_VERSION --dagger-bin-dir {{bin_path}}
+	{{action_bin}} sd --dagger-version {{dagger_version}} --dagger-bin-dir {{bin_path}}
 
 export-kubectl cluster cluster-state gcp-credentials-file: setup
     #!/usr/bin/env bash
