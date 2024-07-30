@@ -43,34 +43,33 @@ export-kubectl cluster cluster-state gcp-credentials-file: setup
     with-cluster --name={{cluster}} \
     export-kubectl --output={{kubectl_file}}
 
-deploy cluster cluster-state gcp-credentials-file ref user pass token: 
+deploy cluster cluster-state gcp-credentials-file ref token user pass: (export-kubectl cluster cluster-state gcp-credentials-file)
     #!/usr/bin/env bash
     set -euxo pipefail
-    just export-kubectl {{cluster}} {{cluster-state}} {{gcp-credentials-file}}
-    deployment_id=`{{dagger_bin}} call -m {{gh_deployment_module}} \ 
+    deployment_id=`{{dagger_bin}} call -m {{gh_deployment_module}} \
         with-application --application=$APP \
         with-docker-image --docker-image=$DOCKER_IMAGE \
         with-docker-namespace --docker-namespace=$DOCKER_NAMESPACE \
         with-dockerfile --dockerfile=$DOCKERFILE \
-        with-project --project=$PROJECT \ 
+        with-project --project=$PROJECT \
         with-stack --stack=$STACK \
-        with-environment --environmant=$ENVIRONMENT \
+        with-environment --environment=$ENVIRONMENT \
         with-repository --repository=$REPOSITORY \
         with-ref --ref={{ref}} \
         create-github-deployment --token={{token}}`
     {{dagger_bin}} call -m {{gh_deployment_module}} \
-        with-repository --repository=$REPOSITORY \
-        set-deployment-status --token={{token}} \
-        deployment_id=$deployment_id \
-        status="in_progress"
+    with-repository --repository=$REPOSITORY \
+    set-deployment-status --token={{token}} \
+    deployment_id=$deployment_id \
+    status="in_progress"
     {{dagger_bin}} call -m {{gh_deployment_module}} \
-        with-repository --repository=$REPOSITORY \
-        set-deployment-status --token={{token}} \
-        deployment_id=$deployment_id \
-        status="queued"
-     {{dagger_bin}} call -m {{gh_deployment_module}} \
-        with-repository --repository=$REPOSITORY \
-        set-deployment-status --token={{token}} \
-        deployment_id=$deployment_id \
-        status="success"
+    with-repository --repository=$REPOSITORY \
+    set-deployment-status --token={{token}} \
+    deployment_id=$deployment_id \
+    status="queued"
+    {{dagger_bin}} call -m {{gh_deployment_module}} \
+    with-repository --repository=$REPOSITORY \
+    set-deployment-status --token={{token}} \
+    deployment_id=$deployment_id \
+    status="success"
 
