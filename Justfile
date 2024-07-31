@@ -43,7 +43,7 @@ export-kubectl cluster cluster-state gcp-credentials-file: setup
     with-cluster --name={{cluster}} \
     export-kubectl --output={{kubectl_file}}
 
-deploy cluster cluster-state gcp-credentials-file ref token user pass: (export-kubectl cluster cluster-state gcp-credentials-file)
+deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: (export-kubectl cluster cluster-state gcp-credentials-file)
     #!/usr/bin/env bash
     set -euxo pipefail
     deployment_id=`{{dagger_bin}} call -m {{gh_deployment_module}} \
@@ -60,16 +60,16 @@ deploy cluster cluster-state gcp-credentials-file ref token user pass: (export-k
     {{dagger_bin}} call -m {{gh_deployment_module}} \
     with-repository --repository=$REPOSITORY \
     set-deployment-status --token={{token}} \
-    deployment_id=$deployment_id \
-    status="in_progress"
+    --deployment-id=$deployment_id \
+    --status=in_progress
     {{dagger_bin}} call -m {{gh_deployment_module}} \
     with-repository --repository=$REPOSITORY \
     set-deployment-status --token={{token}} \
-    deployment_id=$deployment_id \
-    status="queued"
+    --deployment_id=$deployment_id \
+    --status="queued"
     {{dagger_bin}} call -m {{gh_deployment_module}} \
     with-repository --repository=$REPOSITORY \
     set-deployment-status --token={{token}} \
-    deployment_id=$deployment_id \
-    status="success"
+    --deployment-id=$deployment_id \
+    --status="success"
 
