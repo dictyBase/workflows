@@ -1,6 +1,7 @@
 dagger_version := "v0.11.9"
 kops_module := "github.com/dictybase-docker/dagger-of-dcr/kops@main"
 gh_deployment_module := "github.com/dictybase-docker/dagger-of-dcr/gh-deployment@develop"
+container_module := "github.com/dictybase-docker/dagger-of-dcr/container-image@develop"
 bin_path := `mktemp -d`
 action_bin := bin_path + "/actions"
 dagger_bin := bin_path + "/dagger"
@@ -74,6 +75,17 @@ deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: s
     with-credentials --credentials={{gcp-credentials-file}} \
     with-cluster --name={{cluster}} \
     export-kubectl --output={{kubectl_file}}
+
+    # create and publish docker image
+    {{dagger_bin}} call -m {{container_module}} \
+    with-dockerfile --dockerfile=$DOCKERFILE \
+    with-image --image=$DOCKER_IMAGE \
+    with-namespace --namespace=$DOCKER_NAMESPACE \
+    with-repository --repository=$REPOSITORY \
+    with-ref --ref={{ref}} \
+    publish-from-repo-with-deployment-id --token={{token}} \
+    --user={{user}} --password={{pass}} \
+    --deployment-id=$deployment_id
 
     # finish with successful deployment
     {{dagger_bin}} call -m {{gh_deployment_module}} \
