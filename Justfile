@@ -1,3 +1,4 @@
+set dotenv-required
 dagger_version := "v0.11.9"
 kops_module := "github.com/dictybase-docker/dagger-of-dcr/kops@main"
 gh_deployment_module := "github.com/dictybase-docker/dagger-of-dcr/gh-deployment@develop"
@@ -20,7 +21,6 @@ dagger_file := if os() == "macos" {
 } else {
     "linux_amd64" + file_suffix
 }
-set dotenv-filename := ".deploy.development"
 
 system-info:
     @echo this is an {{arch()}} os {{os()}}
@@ -78,7 +78,7 @@ deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: s
 
     # create and publish docker image
     {{dagger_bin}} call -m {{container_module}} \
-    with-dockerfile --dockerfile=$DOCKERFILE \
+    with-dockerfile --docker-file=$DOCKERFILE \
     with-image --image=$DOCKER_IMAGE \
     with-namespace --namespace=$DOCKER_NAMESPACE \
     with-repository --repository=$REPOSITORY \
