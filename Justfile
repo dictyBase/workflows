@@ -43,9 +43,11 @@ export-kubectl cluster cluster-state gcp-credentials-file: setup
     with-cluster --name={{cluster}} \
     export-kubectl --output={{kubectl_file}}
 
-deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: (export-kubectl cluster cluster-state gcp-credentials-file)
+deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: setup
     #!/usr/bin/env bash
     set -euxo pipefail
+
+    # create github deployment
     deployment_id=`{{dagger_bin}} call -m {{gh_deployment_module}} \
         with-application --application=$APP \
         with-docker-image --docker-image=$DOCKER_IMAGE \
@@ -57,16 +59,23 @@ deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: (
         with-repository --repository=$REPOSITORY \
         with-ref --ref={{ref}} \
         create-github-deployment --token={{token}}`
+    
+    # set deployment to in_progress
     {{dagger_bin}} call -m {{gh_deployment_module}} \
     with-repository --repository=$REPOSITORY \
     set-deployment-status --token={{token}} \
     --deployment-id=$deployment_id \
     --status=in_progress
-    {{dagger_bin}} call -m {{gh_deployment_module}} \
-    with-repository --repository=$REPOSITORY \
-    set-deployment-status --token={{token}} \
-    --deployment_id=$deployment_id \
-    --status="queued"
+
+    # generate kubectl file
+    {{dagger_bin}} call -m {{kops_module}} \
+    with-kops with-kubectl \
+    with-state-storage --storage={{cluster-state}} \
+    with-credentials --credentials={{gcp-credentials-file}} \
+    with-cluster --name={{cluster}} \
+    export-kubectl --output={{kubectl_file}}
+
+    # finish with successful deployment
     {{dagger_bin}} call -m {{gh_deployment_module}} \
     with-repository --repository=$REPOSITORY \
     set-deployment-status --token={{token}} \
