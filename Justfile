@@ -3,6 +3,7 @@ dagger_version := "v0.11.9"
 kops_module := "github.com/dictybase-docker/dagger-of-dcr/kops@main"
 gh_deployment_module := "github.com/dictybase-docker/dagger-of-dcr/gh-deployment@develop"
 container_module := "github.com/dictybase-docker/dagger-of-dcr/container-image@develop"
+deploy_module := "github.com/dictybase-docker/dagger-of-dcr/pulumi-ops@develop"
 bin_path := `mktemp -d`
 action_bin := bin_path + "/actions"
 dagger_bin := bin_path + "/dagger"
@@ -82,6 +83,12 @@ deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: s
     with-repository --repository=$REPOSITORY \
     publish-from-repo-with-deployment-id --token={{token}} \
     --user={{user}} --password={{pass}} \
+    --deployment-id=$deployment_id
+
+    #deploy the application
+    {{dagger_bin}} call -m {{deploy_module}} \
+    with-repository --repository=$REPOSITORY \
+    deploy-backend-through-github --token={{token}} \
     --deployment-id=$deployment_id
 
     # finish with successful deployment
