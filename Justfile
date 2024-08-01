@@ -45,7 +45,7 @@ export-kubectl cluster cluster-state gcp-credentials-file: setup
     with-cluster --name={{cluster}} \
     export-kubectl --output={{kubectl_file}}
 
-deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: setup
+deploy-backend cluster cluster-state pulumi-state gcp-credentials-file ref token user pass: setup
     #!/usr/bin/env bash
     set -euxo pipefail
 
@@ -58,7 +58,7 @@ deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: s
         with-project --project=$PROJECT \
         with-stack --stack=$STACK \
         with-environment --environment=$ENVIRONMENT \
-        with-kubectl-file --kubectl-file={{kubectl_file}}
+        with-kubectl-file --kubectl-file={{kubectl_file}} \
         with-repository --repository=$REPOSITORY \
         with-ref --ref={{ref}} \
         create-github-deployment --token={{token}}`
@@ -88,6 +88,10 @@ deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: s
     #deploy the application
     {{dagger_bin}} call -m {{deploy_module}} \
     with-repository --repository=$REPOSITORY \
+    with-credentials --credentials={{gcp-credentials-file}} \
+    with-kube-config --config={{kubectl_file}} \
+    with-backend --backend={{pulumi-state}} \
+    with-pulumi \
     deploy-backend-through-github --token={{token}} \
     --deployment-id=$deployment_id
 
