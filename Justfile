@@ -79,11 +79,7 @@ deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: s
 
     # create and publish docker image
     {{dagger_bin}} call -m {{container_module}} \
-    with-dockerfile --docker-file=$DOCKERFILE \
-    with-image --image=$DOCKER_IMAGE \
-    with-namespace --namespace=$DOCKER_NAMESPACE \
     with-repository --repository=$REPOSITORY \
-    with-ref --ref={{ref}} \
     publish-from-repo-with-deployment-id --token={{token}} \
     --user={{user}} --password={{pass}} \
     --deployment-id=$deployment_id
