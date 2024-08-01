@@ -57,6 +57,7 @@ deploy-backend cluster cluster-state gcp-credentials-file ref token user pass: s
         with-project --project=$PROJECT \
         with-stack --stack=$STACK \
         with-environment --environment=$ENVIRONMENT \
+        with-kubectl-file --kubectl-file={{kubectl_file}}
         with-repository --repository=$REPOSITORY \
         with-ref --ref={{ref}} \
         create-github-deployment --token={{token}}`
