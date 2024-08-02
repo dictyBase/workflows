@@ -47,66 +47,36 @@ on:
         type: string
         default: microservice
         description: "Type of the application to be deployed"
+        default: backend_application
 
 jobs:
-  # Setup Dagger binary and cache
-  # Outputs:
-  # - dagger_version: The version of the Dagger binary
-  # - dagger_checksum: The checksum of the Dagger binary
-  dagger-setup:
-    uses: ./.github/workflows/dagger-setup.yaml
-
-  # Build and publish Docker image
-  # Outputs:
-  # - image_tag: The tag of the published Docker image
-  build-publish-image:
-    needs: dagger-setup
-    uses: ./.github/workflows/build-publish-image.yaml
-    secrets: inherit
-    with:
-      repository: ${{ inputs.repository }}
-      image: ${{ inputs.image }}
-      ref: ${{ inputs.ref }}
-      dockerfile: ${{ inputs.dockerfile }}
-      dagger_version: ${{ needs.dagger-setup.outputs.dagger_version }}
-      dagger_checksum: ${{ needs.dagger-setup.outputs.dagger_checksum }}
-
-  # Setup deployment environment
-  # Outputs:
-  # - workflow_run_id: The ID of the GitHub workflow run
-  deploy-setup:
-    needs: dagger-setup
-    uses: ./.github/workflows/deploy-setup.yaml
-    secrets: inherit
-    with:
-      cluster: ${{ inputs.cluster }}
-      cluster_state_storage: ${{ inputs.cluster_state_storage }}
-      dagger_version: ${{ needs.dagger-setup.outputs.dagger_version }}
-      dagger_checksum: ${{ needs.dagger-setup.outputs.dagger_checksum }}
-      artifact_name: ${{ inputs.artifact_name }}
-      kubectl_config_file: ${{ inputs.kubectl_config_file }}
-
-  # Deploy backend application
-  # No outputs
-  deploy-microservice:
-    if: ${{ inputs.application_type == 'microservice' }}
-    needs: [dagger-setup, build-publish-image, deploy-setup]
-    uses: ./.github/workflows/deploy-microservice.yaml
-    secrets: inherit
-    with:
-      run_id: ${{ needs.deploy-setup.outputs.workflow_run_id }}
-      dagger_version: ${{ needs.dagger-setup.outputs.dagger_version }}
-      dagger_checksum: ${{ needs.dagger-setup.outputs.dagger_checksum }}
-      image_tag: ${{ needs.build-publish-image.outputs.image_tag }}
-      app: ${{ inputs.app }}
-      artifact_name: ${{ inputs.artifact_name }}
-      kubectl_config_file: ${{ inputs.kubectl_config_file }}
-      stack: ${{ inputs.stack }}
-
-  # Delete kubectl artifact
-  # No outputs
-  delete-artifact:
-    needs: deploy-microservice
-    uses: ./.github/workflows/delete-artifact.yaml
-    with:
-      artifact_name: ${{ inputs.artifact_name }}
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        id: gcp_authentication
+        with:
+          credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
+      - name: checkout workflow repo 
+        uses: actions/checkout@v4
+        with: 
+          repository: dictyBase/workflows
+          ref: develop
+      - name: setup just binary
+        uses: extractions/setup-just@v2
+        with:
+          just-version: 1.28.0
+      - name: create the env file for deployment
+        run: |
+          echo "DOCKERFILE=${{ inputs.dockerfile}}" >> .envrc
+          echo "DOCKER_NAMESPACE=${{ inputs.docker_namespace}}" >> .envrc
+          echo "DOCKER_IMAGE=${{ inputs.docker_image}}" >> .envrc
+          echo "REPOSITORY=${{ inputs.repository}}" >> .envrc
+          echo "ENVIRONMENT=${{ inputs.environment}}" >> .envrc
+          echo "PROJECT=${{ inputs.project}}" >> .envrc
+          echo "STACK=${{ inputs.stack}}" >> .envrc
+          echo "APP=${{ inputs.app}}" >> .envrc
+      - name: deploy backend
+        if: ${{ inputs.application_type == 'microservice' }}
+        run: just deploy-backend ${{ inputs.cluster }} ${{ inputs.cluster_state_storage }} {{ inputs.pulumi_state_storage }} ${{ steps.gcp_authentication.outputs.credentials_file_path }} {{ inputs.ref }} {{ secrets.GH_DEPLOY_TOKEN }} ${{ secrets.DOCKERHUB_USER }} {{ secrets.DOCKER_PASS }}
