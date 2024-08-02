@@ -25,6 +25,7 @@ on:
       docker_image: 
         type: string
         required: true
+        description: "Docker image name"
       cluster:
         required: true
         type: string
@@ -36,9 +37,11 @@ on:
       pulumi_state_storage:
         required: true
         type: string
+        description: "Location of Pulumi state storage"
       docker_namespace: 
         type: string
         default: dictybase
+        description: "Docker namespace"
       stack:
         type: string
         default: dev
@@ -50,9 +53,11 @@ on:
       environment:
         type: string
         default: development
+        description: "Deployment environment"
       project: 
         type: string
         default: backend_application
+        description: "Project name"
 
 jobs:
   deploy:
@@ -85,3 +90,4 @@ jobs:
       - name: deploy backend
         if: ${{ inputs.application_type == 'microservice' }}
         run: just deploy-backend ${{ inputs.cluster }} ${{ inputs.cluster_state_storage }} {{ inputs.pulumi_state_storage }} ${{ steps.gcp_authentication.outputs.credentials_file_path }} {{ inputs.ref }} {{ secrets.GH_DEPLOY_TOKEN }} ${{ secrets.DOCKERHUB_USER }} {{ secrets.DOCKER_PASS }}
+
