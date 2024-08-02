@@ -1,5 +1,4 @@
 name: Composite deploy for backend workflow
-
 on:
   workflow_call:
     inputs:
@@ -23,6 +22,9 @@ on:
         required: true
         type: string
         description: "Location of the Dockerfile"
+      docker_image: 
+        type: string
+        required: true
       cluster:
         required: true
         type: string
@@ -31,14 +33,12 @@ on:
         required: true
         type: string
         description: "location of cluster state"
-      artifact_name:
-        default: kubectl-config
+      pulumi_state_storage:
+        required: true
         type: string
-        description: "Name of the artifact to delete"
-      kubectl_config_file:
+      docker_namespace: 
         type: string
-        default: dictycr.yaml
-        description: "Name of the kubectl config file"
+        default: dictybase
       stack:
         type: string
         default: dev
@@ -47,6 +47,11 @@ on:
         type: string
         default: microservice
         description: "Type of the application to be deployed"
+      environment:
+        type: string
+        default: development
+      project: 
+        type: string
         default: backend_application
 
 jobs:
