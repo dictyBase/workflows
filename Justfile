@@ -1,5 +1,6 @@
 set dotenv-required
 dagger_version := "v0.11.9"
+pulumi_version := "3.108.0"
 kops_module := "github.com/dictybase-docker/dagger-of-dcr/kops@main"
 gh_deployment_module := "github.com/dictybase-docker/dagger-of-dcr/gh-deployment@develop"
 container_module := "github.com/dictybase-docker/dagger-of-dcr/container-image@develop"
@@ -91,7 +92,7 @@ deploy-backend cluster cluster-state pulumi-state gcp-credentials-file ref token
     with-credentials --credentials={{gcp-credentials-file}} \
     with-kube-config --config={{kubectl_file}} \
     with-backend --backend={{pulumi-state}} \
-    with-pulumi \
+    with-pulumi --version={{pulumi_version}} \
     deploy-backend-through-github --token={{token}} \
     --deployment-id=$deployment_id
 
