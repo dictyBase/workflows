@@ -55,11 +55,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: google-github-actions/auth@v2
-        id: gcp_authentication
-        with:
-          credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
       - name: checkout workflow repo 
         uses: actions/checkout@v4
         with: 
@@ -79,6 +74,10 @@ jobs:
           echo "PROJECT=${{ inputs.project}}" >> .env
           echo "STACK=${{ inputs.stack}}" >> .env
           echo "APP=${{ inputs.app}}" >> .env
+      - uses: google-github-actions/auth@v2
+        id: gcp_authentication
+        with:
+          credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
       - name: deploy backend
         if: ${{ inputs.application_type == 'microservice' }}
         run: just deploy-backend ${{ inputs.cluster }} ${{ inputs.cluster_state_storage }} ${{ vars.PULUMI_STATE_STORAGE }} ${{ steps.gcp_authentication.outputs.credentials_file_path }} ${{ inputs.ref }} ${{ secrets.GH_DEPLOY_TOKEN }} ${{ secrets.DOCKERHUB_USER }} ${{ secrets.DOCKER_PASS }}
