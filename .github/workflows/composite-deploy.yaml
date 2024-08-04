@@ -81,5 +81,5 @@ jobs:
           echo "APP=${{ inputs.app}}" >> .env
       - name: deploy backend
         if: ${{ inputs.application_type == 'microservice' }}
-        run: just deploy-backend ${{ inputs.cluster }} ${{ inputs.cluster_state_storage }} ${{ vars.PULUMI_STATE_STORAGE }} ${{ steps.gcp_authentication.outputs.credentials_file_path }} {{ inputs.ref }} {{ secrets.GH_DEPLOY_TOKEN }} ${{ secrets.DOCKERHUB_USER }} {{ secrets.DOCKER_PASS }}
+        run: just deploy-backend ${{ inputs.cluster }} ${{ inputs.cluster_state_storage }} ${{ vars.PULUMI_STATE_STORAGE }} ${{ steps.gcp_authentication.outputs.credentials_file_path }} ${{ inputs.ref }} ${{ secrets.GH_DEPLOY_TOKEN }} ${{ secrets.DOCKERHUB_USER }} ${{ secrets.DOCKER_PASS }}
 
