@@ -10,10 +10,6 @@ on:
         required: true
         type: string
         description: "Repository name with owner"
-      image:
-        required: true
-        type: string 
-        description: "Name of docker image"
       ref:
         required: true
         type: string
