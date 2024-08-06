@@ -2,9 +2,9 @@ set dotenv-required
 dagger_version := "v0.11.9"
 pulumi_version := "3.108.0"
 kops_module := "github.com/dictybase-docker/dagger-of-dcr/kops@main"
-gh_deployment_module := "github.com/dictybase-docker/dagger-of-dcr/gh-deployment@develop"
-container_module := "github.com/dictybase-docker/dagger-of-dcr/container-image@develop"
-deploy_module := "github.com/dictybase-docker/dagger-of-dcr/pulumi-ops@develop"
+gh_deployment_module := "github.com/dictybase-docker/dagger-of-dcr/gh-deployment@main"
+container_module := "github.com/dictybase-docker/dagger-of-dcr/container-image@main"
+deploy_module := "github.com/dictybase-docker/dagger-of-dcr/pulumi-ops@main"
 bin_path := `mktemp -d`
 action_bin := bin_path + "/actions"
 dagger_bin := bin_path + "/dagger"
