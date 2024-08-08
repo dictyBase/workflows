@@ -40,7 +40,7 @@ on:
         description: "Name of the Pulumi stack to use"
       application_type:
         type: string
-        default: backend
+        default: microservice
         description: "Type of the application to be deployed"
       environment:
         type: string
@@ -79,6 +79,6 @@ jobs:
         with:
           credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
       - name: deploy backend
-        if: ${{ inputs.application_type == 'backend' || inputs.application_type = 'frontend' }}
+        if: ${{ inputs.application_type == 'backend' || inputs.application_type = 'frontend' || inputs.application_type = 'microservice' }}
         run: just deploy-backend ${{ inputs.cluster }} ${{ inputs.cluster_state_storage }} ${{ vars.PULUMI_STATE_STORAGE }} ${{ steps.gcp_authentication.outputs.credentials_file_path }} ${{ inputs.ref }} ${{ secrets.GH_DEPLOY_TOKEN }} ${{ secrets.DOCKERHUB_USER }} ${{ secrets.DOCKER_PASS }}
 
