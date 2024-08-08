@@ -46,6 +46,10 @@ on:
         type: string
         default: development
         description: "Deployment environment"
+      project: 
+        type: string
+        default: backend_application
+        description: "Project name"
 
 jobs:
   deploy:
