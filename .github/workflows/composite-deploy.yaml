@@ -5,7 +5,7 @@ on:
       app:
         type: string
         required: true
-        description: backend application to be deployed, should be one of content, annotation, order or stock
+        description: backend application to be deployed
       repository:
         required: true
         type: string
