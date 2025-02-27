@@ -1,0 +1,83 @@
+name: buildless deploy for backend
+on:
+  workflow_call:
+    inputs:
+      app:
+        type: string
+        required: true
+        description: backend application to be deployed
+      repository:
+        required: true
+        type: string
+        description: "Repository name with owner"
+      ref:
+        required: true
+        type: string
+        description: "The branch, tag, or SHA to checkout"
+      dockerfile:
+        required: true
+        type: string
+        description: "Location of the Dockerfile"
+      docker_image: 
+        type: string
+        required: true
+        description: "Docker image name"
+      cluster:
+        required: true
+        type: string
+        description: "name of kubernetes cluster"
+      cluster_state_storage:
+        required: true
+        type: string
+        description: "location of cluster state"
+      project: 
+        type: string
+        required: true
+        description: "Project name"
+      stack:
+        type: string
+        required: true
+        description: "Name of the Pulumi stack to use"
+      docker_namespace: 
+        type: string
+        default: dictybase
+        description: "Docker namespace"
+      application_type:
+        type: string
+        default: microservice
+        description: "Type of the application to be deployed"
+      environment:
+        type: string
+        default: development
+        description: "Deployment environment"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout dagger repo with justfile 
+        uses: actions/checkout@v4
+        with: 
+          repository: dictybase-docker/dagger-of-dcr
+          ref: develop
+      - name: setup just binary
+        uses: extractions/setup-just@v2
+        with:
+          just-version: 1.28.0
+      - name: create the env file for deployment
+        run: |
+          echo "DOCKERFILE=${{ inputs.dockerfile}}" >> .env
+          echo "DOCKER_NAMESPACE=${{ inputs.docker_namespace}}" >> .env
+          echo "DOCKER_IMAGE=${{ inputs.docker_image}}" >> .env
+          echo "REPOSITORY=${{ inputs.repository}}" >> .env
+          echo "ENVIRONMENT=${{ inputs.environment}}" >> .env
+          echo "PROJECT=${{ inputs.project}}" >> .env
+          echo "STACK=${{ inputs.stack}}" >> .env
+          echo "APP=${{ inputs.app}}" >> .env
+      - uses: google-github-actions/auth@v2
+        id: gcp_authentication
+        with:
+          credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
+      - name: deploy backend without docker build
+        run: just deploy-buildless-backend ${{ inputs.cluster }} ${{ inputs.cluster_state_storage }} ${{ vars.PULUMI_STATE_STORAGE }} ${{ steps.gcp_authentication.outputs.credentials_file_path }} ${{ inputs.ref }} ${{ secrets.GH_DEPLOY_TOKEN }} ${{ secrets.DOCKERHUB_USER }} ${{ secrets.DOCKER_PASS }}
+
