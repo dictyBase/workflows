@@ -10,6 +10,10 @@ on:
         required: true
         type: string
         description: "The branch,tag or SHA to checkout"
+      version:
+        type: string
+        description: "golanglint-ci version"
+        default: "v1.62.2-alpine"
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -24,4 +28,4 @@ jobs:
         with:
           just-version: 1.36.0
       - name: run lint
-        run: just lint-repo ${{ inputs.repository }} ${{ inputs.ref }}
+        run: just lint-repo ${{ inputs.repository }} ${{ inputs.ref }} ${{ inputs.version }}
