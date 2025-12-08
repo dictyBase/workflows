@@ -50,10 +50,14 @@ on:
         type: string
         default: development
         description: "Deployment environment"
+      runner:
+        type: string
+        default: ubuntu-latest
+        description: "Runner for the job"
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     steps:
       - name: checkout dagger repo with justfile 
         uses: actions/checkout@v4
@@ -66,14 +70,14 @@ jobs:
           just-version: 1.28.0
       - name: create the env file for deployment
         run: |
-          echo "DOCKERFILE=${{ inputs.dockerfile}}" >> .env
-          echo "DOCKER_NAMESPACE=${{ inputs.docker_namespace}}" >> .env
-          echo "DOCKER_IMAGE=${{ inputs.docker_image}}" >> .env
-          echo "REPOSITORY=${{ inputs.repository}}" >> .env
-          echo "ENVIRONMENT=${{ inputs.environment}}" >> .env
-          echo "PROJECT=${{ inputs.project}}" >> .env
-          echo "STACK=${{ inputs.stack}}" >> .env
-          echo "APP=${{ inputs.app}}" >> .env
+          echo "DOCKERFILE=${{ inputs.dockerfile }}" >> .env
+          echo "DOCKER_NAMESPACE=${{ inputs.docker_namespace }}" >> .env
+          echo "DOCKER_IMAGE=${{ inputs.docker_image }}" >> .env
+          echo "REPOSITORY=${{ inputs.repository }}" >> .env
+          echo "ENVIRONMENT=${{ inputs.environment }}" >> .env
+          echo "PROJECT=${{ inputs.project }}" >> .env
+          echo "STACK=${{ inputs.stack }}" >> .env
+          echo "APP=${{ inputs.app }}" >> .env
       - uses: google-github-actions/auth@v2
         id: gcp_authentication
         with:
