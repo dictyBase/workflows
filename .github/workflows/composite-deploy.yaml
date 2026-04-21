@@ -59,6 +59,12 @@ jobs:
   deploy:
     runs-on: ${{ inputs.runner }}
     steps:
+      - name: free disk space
+        run: |
+          docker system prune -af --volumes
+          sudo rm -rf /usr/local/share/.cache/yarn
+          sudo rm -rf /home/runner/.cache
+          df -h
       - name: checkout dagger repo with justfile 
         uses: actions/checkout@v4
         with: 
@@ -88,4 +94,3 @@ jobs:
       - name: deploy frontend
         if: ${{ inputs.application_type == 'frontend' }}
         run: just deploy-frontend ${{ inputs.cluster }} ${{ inputs.cluster_state_storage }} ${{ vars.PULUMI_STATE_STORAGE }} ${{ steps.gcp_authentication.outputs.credentials_file_path }} ${{ inputs.ref }} ${{ secrets.GH_DEPLOY_TOKEN }} ${{ secrets.DOCKERHUB_USER }} ${{ secrets.DOCKER_PASS }}
-
