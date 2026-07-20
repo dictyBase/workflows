@@ -62,6 +62,10 @@ jobs:
       - name: free disk space
         run: |
           docker system prune -af --volumes
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
           sudo rm -rf /usr/local/share/.cache/yarn
           sudo rm -rf /home/runner/.cache
           df -h
