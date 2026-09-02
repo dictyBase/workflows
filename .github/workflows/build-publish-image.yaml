@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       JUST_UNSTABLE: 1
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: checkout dagger repo with justfile 
         uses: actions/checkout@v4

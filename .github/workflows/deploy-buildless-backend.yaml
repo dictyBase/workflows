@@ -55,6 +55,7 @@ jobs:
   deploy:
     env:
       JUST_UNSTABLE: 1
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout dagger repo with justfile 

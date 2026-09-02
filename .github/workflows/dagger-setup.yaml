@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       JUST_UNSTABLE: 1
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       dagger_checksum: ${{ steps.dag_check.outputs.dagger_bin_checksum }}
       dagger_version: ${{ steps.dag_check.outputs.dagger_version }}
