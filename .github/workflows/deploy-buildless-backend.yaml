@@ -53,6 +53,8 @@ on:
 
 jobs:
   deploy:
+    env:
+      JUST_UNSTABLE: 1
     runs-on: ubuntu-latest
     steps:
       - name: checkout dagger repo with justfile 
@@ -61,9 +63,9 @@ jobs:
           repository: dictybase-docker/dagger-of-dcr
           ref: develop
       - name: setup just binary
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v4
         with:
-          just-version: 1.28.0
+          just-version: 1.58.0
       - name: create the env file for deployment
         run: |
           echo "DOCKERFILE=${{ inputs.dockerfile}}" >> .env

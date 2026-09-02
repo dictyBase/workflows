@@ -12,6 +12,8 @@ on:
 jobs:
   setup-dagger:
     runs-on: ubuntu-latest
+    env:
+      JUST_UNSTABLE: 1
     outputs:
       dagger_checksum: ${{ steps.dag_check.outputs.dagger_bin_checksum }}
       dagger_version: ${{ steps.dag_check.outputs.dagger_version }}
@@ -22,9 +24,9 @@ jobs:
           repository: dictyBase/workflows
           ref: develop
       - name: setup just binary
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v4
         with:
-          just-version: 1.28.0
+          just-version: 1.58.0
       - name: basic setup for dagger
         id: dag_check
         run: just manage-paths setup-gha-binary setup-dag-ver-checksum

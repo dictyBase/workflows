@@ -26,6 +26,8 @@ on:
 jobs:
   publish-image:
     runs-on: ubuntu-latest
+    env:
+      JUST_UNSTABLE: 1
     steps:
       - name: checkout dagger repo with justfile 
         uses: actions/checkout@v4
@@ -33,9 +35,9 @@ jobs:
           repository: dictybase-docker/dagger-of-dcr
           ref: develop
       - name: setup just binary
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v4
         with:
-          just-version: 1.28.0
+          just-version: 1.58.0
       - name: build and publish docker image
         id: publish
         run: just build-publish-image ${{ inputs.repository }} ${{ inputs.ref }} ${{ secrets.DOCKERHUB_USER }} ${{ secrets.DOCKER_PASS }} ${{ inputs.namespace }} ${{ inputs.image }} ${{ inputs.dockerfile }}

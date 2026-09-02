@@ -16,6 +16,8 @@ on:
         default: "v1.64.8-alpine"
 jobs:
   lint:
+    env:
+      JUST_UNSTABLE: 1
     runs-on: ubuntu-latest
     steps:
       - name: checkout dagger repo with justfile 
@@ -24,8 +26,8 @@ jobs:
           repository: dictybase-docker/dagger-of-dcr
           ref: develop
       - name: setup just binary
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v4
         with:
-          just-version: 1.36.0
+          just-version: 1.58.0
       - name: run lint
         run: just lint-repo ${{ inputs.repository }} ${{ inputs.ref }} ${{ inputs.version }}
