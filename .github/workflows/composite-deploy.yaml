@@ -58,6 +58,8 @@ on:
 jobs:
   deploy:
     runs-on: ${{ inputs.runner }}
+    env:
+      JUST_UNSTABLE: 1
     steps:
       - name: free disk space
         run: |
@@ -71,9 +73,9 @@ jobs:
           repository: dictybase-docker/dagger-of-dcr
           ref: develop
       - name: setup just binary
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v4
         with:
-          just-version: 1.28.0
+          just-version: 1.58.0
       - name: create the env file for deployment
         run: |
           echo "DOCKERFILE=${{ inputs.dockerfile }}" >> .env
