@@ -54,6 +54,26 @@ on:
         type: string
         default: ubuntu-latest
         description: "Runner for the job"
+      kops_version:
+        type: string
+        default: "1.29.2"
+        description: "kOps version used to manage the cluster"
+      kubectl_version:
+        type: string
+        default: "1.28.8"
+        description: "kubectl version used against the cluster"
+      pulumi_version:
+        type: string
+        default: "3.108.0"
+        description: "Pulumi CLI version used for the deployment"
+      cluster_ops_ref:
+        type: string
+        default: develop
+        description: "Git ref of dictyBase/cluster-ops to clone"
+      dagger_ref:
+        type: string
+        default: develop
+        description: "Git ref of dictybase-docker/dagger-of-dcr to checkout"
 
 jobs:
   deploy:
@@ -72,7 +92,7 @@ jobs:
         uses: actions/checkout@v4
         with: 
           repository: dictybase-docker/dagger-of-dcr
-          ref: develop
+          ref: ${{ inputs.dagger_ref }}
       - name: setup just binary
         uses: extractions/setup-just@v4
         with:
@@ -93,7 +113,33 @@ jobs:
           credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
       - name: deploy backend
         if: ${{ inputs.application_type == 'backend' || inputs.application_type == 'microservice' }}
-        run: just deploy-backend ${{ inputs.cluster }} ${{ inputs.cluster_state_storage }} ${{ vars.PULUMI_STATE_STORAGE }} ${{ steps.gcp_authentication.outputs.credentials_file_path }} ${{ inputs.ref }} ${{ secrets.GH_DEPLOY_TOKEN }} ${{ secrets.DOCKERHUB_USER }} ${{ secrets.DOCKER_PASS }}
+        run: |
+          just deploy-backend \
+            --cluster ${{ inputs.cluster }} \
+            --cluster-state ${{ inputs.cluster_state_storage }} \
+            --pulumi-state ${{ vars.PULUMI_STATE_STORAGE }} \
+            --gcp-credentials-file ${{ steps.gcp_authentication.outputs.credentials_file_path }} \
+            --ref ${{ inputs.ref }} \
+            --kops-version ${{ inputs.kops_version }} \
+            --kubectl-version ${{ inputs.kubectl_version }} \
+            --pulumi-version ${{ inputs.pulumi_version }} \
+            --cluster-ops-ref ${{ inputs.cluster_ops_ref }} \
+            --token ${{ secrets.GH_DEPLOY_TOKEN }} \
+            --user ${{ secrets.DOCKERHUB_USER }} \
+            --pass ${{ secrets.DOCKER_PASS }}
       - name: deploy frontend
         if: ${{ inputs.application_type == 'frontend' }}
-        run: just deploy-frontend ${{ inputs.cluster }} ${{ inputs.cluster_state_storage }} ${{ vars.PULUMI_STATE_STORAGE }} ${{ steps.gcp_authentication.outputs.credentials_file_path }} ${{ inputs.ref }} ${{ secrets.GH_DEPLOY_TOKEN }} ${{ secrets.DOCKERHUB_USER }} ${{ secrets.DOCKER_PASS }}
+        run: |
+          just deploy-frontend \
+            --cluster ${{ inputs.cluster }} \
+            --cluster-state ${{ inputs.cluster_state_storage }} \
+            --pulumi-state ${{ vars.PULUMI_STATE_STORAGE }} \
+            --gcp-credentials-file ${{ steps.gcp_authentication.outputs.credentials_file_path }} \
+            --ref ${{ inputs.ref }} \
+            --kops-version ${{ inputs.kops_version }} \
+            --kubectl-version ${{ inputs.kubectl_version }} \
+            --pulumi-version ${{ inputs.pulumi_version }} \
+            --cluster-ops-ref ${{ inputs.cluster_ops_ref }} \
+            --token ${{ secrets.GH_DEPLOY_TOKEN }} \
+            --user ${{ secrets.DOCKERHUB_USER }} \
+            --pass ${{ secrets.DOCKER_PASS }}
