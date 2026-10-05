@@ -87,16 +87,6 @@ jobs:
         uses: extractions/setup-just@v4
         with:
           just-version: 1.58.0
-      - name: create the env file for deployment
-        run: |
-          echo "DOCKERFILE=${{ inputs.dockerfile}}" >> .env
-          echo "DOCKER_NAMESPACE=${{ inputs.docker_namespace}}" >> .env
-          echo "DOCKER_IMAGE=${{ inputs.docker_image}}" >> .env
-          echo "REPOSITORY=${{ inputs.repository}}" >> .env
-          echo "ENVIRONMENT=${{ inputs.environment}}" >> .env
-          echo "PROJECT=${{ inputs.project}}" >> .env
-          echo "STACK=${{ inputs.stack}}" >> .env
-          echo "APP=${{ inputs.app}}" >> .env
       - uses: google-github-actions/auth@v2
         id: gcp_authentication
         with:
@@ -109,6 +99,14 @@ jobs:
             --pulumi-state ${{ vars.PULUMI_STATE_STORAGE }} \
             --gcp-credentials-file ${{ steps.gcp_authentication.outputs.credentials_file_path }} \
             --ref ${{ inputs.ref }} \
+            --app ${{ inputs.app }} \
+            --docker-image ${{ inputs.docker_image }} \
+            --docker-namespace ${{ inputs.docker_namespace }} \
+            --dockerfile ${{ inputs.dockerfile }} \
+            --project ${{ inputs.project }} \
+            --stack ${{ inputs.stack }} \
+            --environment ${{ inputs.environment }} \
+            --repository ${{ inputs.repository }} \
             --kops-version ${{ inputs.kops_version }} \
             --kubectl-version ${{ inputs.kubectl_version }} \
             --pulumi-version ${{ inputs.pulumi_version }} \
