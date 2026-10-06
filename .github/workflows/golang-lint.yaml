@@ -31,7 +31,8 @@ jobs:
         with:
           just-version: 1.58.0
       - name: run lint
-        run: just lint-repo \
-          --repository ${{ inputs.repository }} \
-          --ref ${{ inputs.ref }} \
+        run: >-
+          just lint-repo
+          --repository ${{ inputs.repository }}
+          --ref ${{ inputs.ref }}
           --version ${{ inputs.version }}
