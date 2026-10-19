@@ -104,14 +104,14 @@ jobs:
       - uses: google-github-actions/auth@v2
         id: gcp_authentication
         with:
-          credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
+          credentials_json: ${{ inputs.environment == 'production' && secrets.PROD_DEPLOY_SA_KEY || secrets.DEPLOY_SA_KEY }}
       - name: deploy backend
         if: ${{ inputs.application_type == 'backend' || inputs.application_type == 'microservice' }}
         run: |
           just deploy-backend \
             --cluster ${{ inputs.cluster }} \
             --cluster-state ${{ inputs.cluster_state_storage }} \
-            --pulumi-state ${{ vars.PULUMI_STATE_STORAGE }} \
+            --pulumi-state ${{ inputs.environment == 'production' && vars.PROD_PULUMI_STATE_STORAGE || vars.PULUMI_STATE_STORAGE }} \
             --gcp-credentials-file ${{ steps.gcp_authentication.outputs.credentials_file_path }} \
             --ref ${{ inputs.ref }} \
             --app ${{ inputs.app }} \
@@ -135,7 +135,7 @@ jobs:
           just deploy-frontend \
             --cluster ${{ inputs.cluster }} \
             --cluster-state ${{ inputs.cluster_state_storage }} \
-            --pulumi-state ${{ vars.PULUMI_STATE_STORAGE }} \
+            --pulumi-state ${{ inputs.environment == 'production' && vars.PROD_PULUMI_STATE_STORAGE || vars.PULUMI_STATE_STORAGE }} \
             --gcp-credentials-file ${{ steps.gcp_authentication.outputs.credentials_file_path }} \
             --ref ${{ inputs.ref }} \
             --app ${{ inputs.app }} \
