@@ -50,6 +50,10 @@ on:
         type: string
         default: development
         description: "Deployment environment"
+      runner:
+        type: string
+        default: ubuntu-latest
+        description: "Runner for the job"
       kops_version:
         type: string
         default: "1.29.2"
@@ -76,7 +80,7 @@ jobs:
     env:
       JUST_UNSTABLE: 1
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     steps:
       - name: checkout dagger repo with justfile 
         uses: actions/checkout@v4
@@ -90,13 +94,13 @@ jobs:
       - uses: google-github-actions/auth@v2
         id: gcp_authentication
         with:
-          credentials_json: ${{ secrets.DEPLOY_SA_KEY }}
+          credentials_json: ${{ inputs.environment == 'production' && secrets.PROD_DEPLOY_SA_KEY || secrets.DEPLOY_SA_KEY }}
       - name: deploy backend without docker build
         run: |
           just deploy-buildless-backend \
             --cluster ${{ inputs.cluster }} \
             --cluster-state ${{ inputs.cluster_state_storage }} \
-            --pulumi-state ${{ vars.PULUMI_STATE_STORAGE }} \
+            --pulumi-state ${{ inputs.environment == 'production' && vars.PROD_PULUMI_STATE_STORAGE || vars.PULUMI_STATE_STORAGE }} \
             --gcp-credentials-file ${{ steps.gcp_authentication.outputs.credentials_file_path }} \
             --ref ${{ inputs.ref }} \
             --app ${{ inputs.app }} \
